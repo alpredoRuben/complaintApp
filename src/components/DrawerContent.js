@@ -1,22 +1,16 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {
-  useTheme,
-  Avatar,
-  Title,
-  Caption,
-  Paragraph,
-  Drawer,
-  Text,
-  TouchableRipple,
-  Switch,
-} from 'react-native-paper';
+import {View, StyleSheet, Text} from 'react-native';
+import {Avatar, Title, Caption, Drawer} from 'react-native-paper';
 import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
+import defineRoute from './defineRoute';
+import Colors from '../utils/Colors';
 
 export default function DrawerContent(props) {
   const signOut = () => {
-    console.log('alert');
+    defineRoute.map((item, index) => {
+      console.log({icon: item.icon, name: item.name});
+    });
   };
 
   return (
@@ -37,60 +31,63 @@ export default function DrawerContent(props) {
               </View>
             </View>
           </View>
-
           <Drawer.Section style={styles.drawerSection}>
-            <DrawerItem
+            {defineRoute.map((item, index) => {
+              return (
+                <DrawerItem
+                  key={`DI-${index}`}
+                  activeTintColor={Colors.PrimaryTransparancy}
+                  label={({color}) => (
+                    <Text style={{color}}>{item.drawerLabel}</Text>
+                  )}
+                  icon={({color, size}) => (
+                    <Icon name={item.drawerIcon} size={size} color={color} />
+                  )}
+                  onPress={() => {
+                    props.navigation.navigate(item.routeName);
+                  }}
+                />
+              );
+            })}
+            {/* <DrawerItem
               icon={({color, size}) => (
-                <Icon name="home-outline" color={color} size={size} />
+                <Icon
+                  name="folder-star-multiple-outline"
+                  color={color}
+                  size={size}
+                />
               )}
-              label="Home"
+              label="Dashboard"
               onPress={() => {
-                props.navigation.navigate('Home');
+                props.navigation.navigate('Dashboard');
               }}
-            />
-            <DrawerItem
-              icon={({color, size}) => (
-                <Icon name="account-outline" color={color} size={size} />
-              )}
-              label="Profile"
-              onPress={() => {
-                props.navigation.navigate('Profile');
-              }}
-            />
-            <DrawerItem
-              icon={({color, size}) => (
-                <Icon name="bookmark-outline" color={color} size={size} />
-              )}
-              label="Bookmarks"
-              onPress={() => {
-                props.navigation.navigate('BookmarkScreen');
-              }}
-            />
-            <DrawerItem
-              icon={({color, size}) => (
-                <Icon name="settings-outline" color={color} size={size} />
-              )}
-              label="Settings"
-              onPress={() => {
-                props.navigation.navigate('SettingsScreen');
-              }}
-            />
-            <DrawerItem
-              icon={({color, size}) => (
-                <Icon name="account-check-outline" color={color} size={size} />
-              )}
-              label="Support"
-              onPress={() => {
-                props.navigation.navigate('SupportScreen');
-              }}
-            />
+            /> */}
           </Drawer.Section>
+
+          {/* <Drawer.Section style={styles.drawerSection}>
+            {SideNavRoute.map((r, i) => {
+              console.log(r);
+              return (
+                <DrawerItem
+                  key={i}
+                  icon={({color, size}) => (
+                    <Icon name={r.icon} color={color} size={size} />
+                  )}
+                  label={r.label}
+                  onPress={() => {
+                    props.navigation.navigate(r.name);
+                  }}
+                />
+              );
+            })}
+          </Drawer.Section> */}
         </View>
       </DrawerContentScrollView>
+
       <Drawer.Section style={styles.bottomDrawerSection}>
         <DrawerItem
           icon={({color, size}) => (
-            <Icon name="exit-to-app" color={color} size={size} />
+            <Icon name="ios-trail-sign-outline" color={color} size={size} />
           )}
           label="Sign Out"
           onPress={() => signOut()}

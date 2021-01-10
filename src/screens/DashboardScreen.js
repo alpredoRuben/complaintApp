@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text} from 'react-native';
+import CustomMenuButton from '../components/CustomMenuButton';
 
 export default function DashboardScreen(props) {
   return (
@@ -8,3 +9,20 @@ export default function DashboardScreen(props) {
     </View>
   );
 }
+
+export const DashboardScreenOptions = (navdata) => {
+  return {
+    headerTitle: 'Dashboard',
+    headerLeft: () => {
+      return (
+        <CustomMenuButton
+          name="ios-menu"
+          onPress={() => navdata.navigation.openDrawer()}
+        />
+      );
+    },
+    headerTitleStyle: {
+      alignSelf: 'center',
+    },
+  };
+};
