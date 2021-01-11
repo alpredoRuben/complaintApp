@@ -17,6 +17,7 @@ import {useTheme} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {ImagePNG} from '../assets';
 import LoginStyle from './styles/LoginStyle';
@@ -27,7 +28,6 @@ import {loginAction} from '../store/actions/AuthAction';
 import {useDispatch, useSelector} from 'react-redux';
 import {useEffect} from 'react';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {USER_STORAGE_KEY} from '../utils/Config';
 
 const styles = LoginStyle;
