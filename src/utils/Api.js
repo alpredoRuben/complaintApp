@@ -1,17 +1,18 @@
 import axios from 'axios';
-import {AsyncStorage} from 'react-native';
+import {REACT_NATIVE_API_URL, USER_STORAGE_KEY} from './Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const fetchHeader = async () => {
-  let token;
-  let headers = {Accept: 'application/json'};
+  let headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  };
 
-  try {
-    token = await AsyncStorage.getItem('userToken');
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-  } catch (e) {
-    console.log(e);
+  let storages = await AsyncStorage.getItem(USER_STORAGE_KEY);
+
+  if (storages) {
+    const token = JSON.parse(storages).token;
+    headers.Authorization = `Bearer ${token}`;
   }
 
   return headers;
@@ -23,4 +24,4 @@ const Api = axios.create({
   headers: fetchHeader(),
 });
 
-export default Api
+export default Api;

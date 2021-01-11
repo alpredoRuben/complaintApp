@@ -1,6 +1,6 @@
 import React from 'react';
-import Colors from './Colors';
 import IonIcon from 'react-native-vector-icons/Ionicons';
+import Colors from './Colors';
 
 export const DefaultScreenOptions = {
   headerStyle: {

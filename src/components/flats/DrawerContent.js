@@ -4,7 +4,7 @@ import {Avatar, Title, Caption, Drawer} from 'react-native-paper';
 import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/Ionicons';
 import defineRoute from './defineRoute';
-import Colors from '../utils/Colors';
+import Colors from '../../utils/Colors';
 
 export default function DrawerContent(props) {
   const signOut = () => {

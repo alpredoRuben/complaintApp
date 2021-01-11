@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Colors from '../utils/Colors';
+import Colors from '../../utils/Colors';
 
 export default function CustomMenuButton(props) {
   return (
