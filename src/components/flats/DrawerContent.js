@@ -26,7 +26,7 @@ export default function DrawerContent(props) {
                 size={50}
               />
               <View style={styles.avatarTitle}>
-                <Title style={styles.title}>Ruben Alpredo</Title>
+                <Title style={styles.title}>Razor XDo</Title>
                 <Caption style={styles.caption}>Pegawai</Caption>
               </View>
             </View>

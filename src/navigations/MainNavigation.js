@@ -1,6 +1,5 @@
 import React from 'react';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
-import {createStackNavigator} from '@react-navigation/stack';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -10,7 +9,9 @@ import {
   InfoStackScreen,
   ProfileStackScreen,
 } from './Stackers';
+import Colors from '../utils/Colors';
 
+import {DrawerContent} from '../components';
 const Drawer = createDrawerNavigator();
 const Tab = createMaterialBottomTabNavigator();
 
@@ -21,7 +22,7 @@ const MainTabScreen = () => (
       component={DashboardStackScreen}
       options={{
         tabBarLabel: 'Dashboard',
-        tabBarColor: '#009387',
+        tabBarColor: Colors.SecondBackground,
         tabBarIcon: ({color}) => (
           <Icon name="ios-home" color={color} size={26} />
         ),
@@ -32,7 +33,7 @@ const MainTabScreen = () => (
       component={InfoStackScreen}
       options={{
         tabBarLabel: 'Informasi',
-        tabBarColor: '#1f65ff',
+        tabBarColor: Colors.SecondBackground,
         tabBarIcon: ({color}) => (
           <Icon name="ios-information-circle" color={color} size={26} />
         ),
@@ -43,7 +44,7 @@ const MainTabScreen = () => (
       component={ProfileStackScreen}
       options={{
         tabBarLabel: 'Profile',
-        tabBarColor: '#694fad',
+        tabBarColor: Colors.SecondBackground,
         tabBarIcon: ({color}) => (
           <Icon name="ios-person" color={color} size={26} />
         ),
@@ -54,7 +55,7 @@ const MainTabScreen = () => (
 
 export default function MainNavigation() {
   return (
-    <Drawer.Navigator>
+    <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
       <Drawer.Screen name="DashboardDrawer" component={MainTabScreen} />
       {Routes.map((item, index) => (
         <Drawer.Screen

@@ -2,22 +2,17 @@ const defineRoute = [
   {
     drawerIcon: 'home-outline',
     drawerLabel: 'Dashboard',
-    routeName: 'Dashboard',
-  },
-  {
-    drawerIcon: 'cog-outline',
-    drawerLabel: 'Jenis Operasional',
-    routeName: 'OperationalType',
+    routeName: 'DashboardScreen',
   },
   {
     drawerIcon: 'ios-folder-open-outline',
     drawerLabel: 'Jenis Pengaduan',
-    routeName: 'ComplaintType',
+    routeName: 'ComplaintTypeScreen',
   },
   {
     drawerIcon: 'clipboard-outline',
     drawerLabel: 'Pengaduan',
-    routeName: 'Complaint',
+    routeName: 'ComplaintScreen',
   },
   {
     drawerIcon: 'notifications',

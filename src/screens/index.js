@@ -1,7 +1,6 @@
 import SplashScreen from './SplashScreen';
 import LoginScreen from './LoginScreen';
 import DashboardScreen from './DashboardScreen';
-import OperationalTypeScreen from './OperationalTypeScreen';
 import ComplaintTypeScreen from './ComplaintTypeScreen';
 import ComplaintScreen from './ComplaintScreen';
 import ProfileScreen from './ProfileScreen';
@@ -14,7 +13,6 @@ export {
   SplashScreen,
   LoginScreen,
   DashboardScreen,
-  OperationalTypeScreen,
   ComplaintScreen,
   ComplaintTypeScreen,
   SettingScreen,

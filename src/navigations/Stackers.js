@@ -9,21 +9,28 @@ import ComplaintTypeScreen, {
   ComplaintTypeScreenOptions,
 } from '../screens/ComplaintTypeScreen';
 
-import OperationalTypeScreen, {
-  OperationalTypeScreenOptions,
-} from '../screens/OperationalTypeScreen';
-
 import InfoScreen, {InfoScreenOptions} from '../screens/InfoScreen';
 import ProfileScreen, {ProfileScreenOptions} from '../screens/ProfileScreen';
 import NotifScreen, {NotifScreenOptions} from '../screens/NotifScreen';
 import ComplaintScreen, {
   ComplaintScreenOptions,
 } from '../screens/ComplaintScreen';
+import Colors from '../utils/Colors';
+
+const optionScreen = {
+  headerStyle: {
+    backgroundColor: Colors.PrimaryBackground,
+  },
+  headerTintColor: Colors.White,
+  headerTitleStyle: {
+    fontWeight: 'bold',
+  },
+};
 
 const DashboardStack = createStackNavigator();
 export const DashboardStackScreen = () => {
   return (
-    <DashboardStack.Navigator>
+    <DashboardStack.Navigator screenOptions={optionScreen}>
       <DashboardStack.Screen
         name="DashboardScreen"
         component={DashboardScreen}
@@ -36,7 +43,7 @@ export const DashboardStackScreen = () => {
 const ComplaintTypeStack = createStackNavigator();
 export const ComplaintTypeStackScreen = () => {
   return (
-    <ComplaintTypeStack.Navigator>
+    <ComplaintTypeStack.Navigator screenOptions={optionScreen}>
       <ComplaintTypeStack.Screen
         name="ComplaintTypeScreen"
         component={ComplaintTypeScreen}
@@ -46,23 +53,10 @@ export const ComplaintTypeStackScreen = () => {
   );
 };
 
-const OperationalTypeStack = createStackNavigator();
-export const OperationalTypeStackScreen = () => {
-  return (
-    <OperationalTypeStack.Navigator>
-      <OperationalTypeStack.Screen
-        name="OperationalTypeScreen"
-        component={OperationalTypeScreen}
-        options={OperationalTypeScreenOptions}
-      />
-    </OperationalTypeStack.Navigator>
-  );
-};
-
 const InfoStack = createStackNavigator();
 export const InfoStackScreen = () => {
   return (
-    <InfoStack.Navigator>
+    <InfoStack.Navigator screenOptions={optionScreen}>
       <InfoStack.Screen
         name="InfoScreen"
         component={InfoScreen}
@@ -75,7 +69,7 @@ export const InfoStackScreen = () => {
 const ProfileStack = createStackNavigator();
 export const ProfileStackScreen = () => {
   return (
-    <ProfileStack.Navigator>
+    <ProfileStack.Navigator screenOptions={optionScreen}>
       <ProfileStack.Screen
         name="ProfileScreen"
         component={ProfileScreen}
@@ -88,7 +82,7 @@ export const ProfileStackScreen = () => {
 const NotifStack = createStackNavigator();
 export const NotifStackScreen = () => {
   return (
-    <NotifStack.Navigator>
+    <NotifStack.Navigator screenOptions={optionScreen}>
       <NotifStack.Screen
         name="NotifScreen"
         component={NotifScreen}
@@ -101,7 +95,7 @@ export const NotifStackScreen = () => {
 const ComplaintStack = createStackNavigator();
 export const ComplaintStackScreen = () => {
   return (
-    <ComplaintStack.Navigator>
+    <ComplaintStack.Navigator screenOptions={optionScreen}>
       <ComplaintStack.Screen
         name="ComplaintScreen"
         component={ComplaintScreen}
