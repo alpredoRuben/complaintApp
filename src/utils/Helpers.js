@@ -25,3 +25,15 @@ export function MenuToggle(navigation, str) {
     ),
   };
 }
+
+const replaced = (l, v) => {
+  return {label: l, value: v};
+};
+
+export const generateDropDownPicker = (data, labelName, valueName) => {
+  var newData = [];
+  for (let i = 0; i < data.length; i++) {
+    const element = replaced(data[i][labelName], data[i][valueName]);
+    newData.push(element);
+  }
+};

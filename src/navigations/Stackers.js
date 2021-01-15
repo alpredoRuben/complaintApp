@@ -15,7 +15,28 @@ import NotifScreen, {NotifScreenOptions} from '../screens/NotifScreen';
 import ComplaintScreen, {
   ComplaintScreenOptions,
 } from '../screens/ComplaintScreen';
+import AddComplaintScreen, {
+  AddComplaintScreenOptions,
+} from '../screens/AddComplaintScreen';
 import Colors from '../utils/Colors';
+
+// import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+// import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+
+// function getHeaderTitle(route) {
+//   const routeName = getFocusedRouteNameFromRoute(route) ?? 'ComplaintScreen';
+
+//   switch (routeName) {
+//     case 'ComplaintScreen':
+//       return 'Data Pengaduan';
+//     case 'AddComplaintScreen':
+//       return 'Form Buat Pengaduan';
+//     case 'Feed':
+//       return 'Feedback';
+//   }
+// }
+
+// const Tab = createMaterialTopTabNavigator();
 
 const optionScreen = {
   headerStyle: {
@@ -100,6 +121,11 @@ export const ComplaintStackScreen = () => {
         name="ComplaintScreen"
         component={ComplaintScreen}
         options={ComplaintScreenOptions}
+      />
+      <ComplaintStack.Screen
+        name="AddComplaintScreen"
+        component={AddComplaintScreen}
+        options={AddComplaintScreenOptions}
       />
     </ComplaintStack.Navigator>
   );

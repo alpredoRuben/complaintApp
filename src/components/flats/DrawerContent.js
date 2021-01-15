@@ -49,38 +49,7 @@ export default function DrawerContent(props) {
                 />
               );
             })}
-            {/* <DrawerItem
-              icon={({color, size}) => (
-                <Icon
-                  name="folder-star-multiple-outline"
-                  color={color}
-                  size={size}
-                />
-              )}
-              label="Dashboard"
-              onPress={() => {
-                props.navigation.navigate('Dashboard');
-              }}
-            /> */}
           </Drawer.Section>
-
-          {/* <Drawer.Section style={styles.drawerSection}>
-            {SideNavRoute.map((r, i) => {
-              console.log(r);
-              return (
-                <DrawerItem
-                  key={i}
-                  icon={({color, size}) => (
-                    <Icon name={r.icon} color={color} size={size} />
-                  )}
-                  label={r.label}
-                  onPress={() => {
-                    props.navigation.navigate(r.name);
-                  }}
-                />
-              );
-            })}
-          </Drawer.Section> */}
         </View>
       </DrawerContentScrollView>
 

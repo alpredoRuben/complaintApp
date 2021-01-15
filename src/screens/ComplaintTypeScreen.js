@@ -9,7 +9,6 @@ import {
   FlatList,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import Api from '../utils/Api';
 import Colors from '../utils/Colors';

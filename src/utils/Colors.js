@@ -10,6 +10,9 @@ const Colors = {
   PrimaryBackground: '#003891',
   SecondBackground: '#009387',
   PrimaryTransparancy: '#bbf0ea',
+  HeadingText: '#046350',
+  Info: '#03a8a0',
+  Back: '#0060ba',
 };
 
 export default Colors;
