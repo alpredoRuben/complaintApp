@@ -1,8 +1,7 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import SplashScreen from '../screens/SplashScreen';
-import LoginScreen from '../screens/LoginScreen';
+import {LoginScreen, SplashScreen} from '../screens';
 
 const AuthStack = createStackNavigator();
 

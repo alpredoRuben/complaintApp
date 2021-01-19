@@ -1,13 +1,7 @@
-export const ImagePNG = {
-  Logo: require('./png/logo.png'),
-  Login: require('./png/login.png'),
-  Complaint: require('./png/complaint.png'),
-};
+const LogoPNG = require('./png/logo.png');
+const LoginPNG = require('./png/login.png');
+const ComplaintPNG = require('./png/complaint.png');
+const UserAvatarPNG = require('./png/user.png');
+const LoginSVG = require('./svg/login.svg');
 
-export const ImageSVG = {
-  login: require('./svg/login.svg'),
-};
-
-import IllustrationLogin from './svg/login.svg';
-
-export {IllustrationLogin};
+export {LoginPNG, LogoPNG, ComplaintPNG, UserAvatarPNG, LoginSVG};
