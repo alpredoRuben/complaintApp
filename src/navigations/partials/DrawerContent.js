@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Avatar, Title, Caption, Drawer} from 'react-native-paper';
@@ -9,18 +10,14 @@ import {UserAvatarPNG} from '../../assets';
 import {useSelector, useDispatch} from 'react-redux';
 import {} from '../../actions';
 import {logout} from '../../actions/AuthAction';
+
 function DrawerContent(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
   const dispatch = useDispatch();
 
-  const signOut = () => {
-    dispatch(logout());
-    props.navigation.navigate('SplashScreen');
-  };
-
   return (
     <View style={styles.drawerContent}>
-      <DrawerContentScrollView {...props}>
+      <DrawerContentScrollView>
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
             <View style={styles.avatarCover}>
@@ -71,17 +68,20 @@ function DrawerContent(props) {
               ))}
           </Drawer.Section>
         </View>
+        <Drawer.Section style={styles.bottomDrawerSection}>
+          <DrawerItem
+            icon={({color, size}) => (
+              <Icon name="ios-trail-sign-outline" color="white" size={size} />
+            )}
+            label="Logout"
+            labelStyle={{color: 'white', fontWeight: 'bold'}}
+            onPress={() => {
+              dispatch(logout());
+              props.navigation.navigate('SplashScreen');
+            }}
+          />
+        </Drawer.Section>
       </DrawerContentScrollView>
-
-      <Drawer.Section style={styles.bottomDrawerSection}>
-        <DrawerItem
-          icon={({color, size}) => (
-            <Icon name="ios-trail-sign-outline" color={color} size={size} />
-          )}
-          label="Sign Out"
-          onPress={() => signOut()}
-        />
-      </Drawer.Section>
     </View>
   );
 }
@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderTopColor: '#f4f4f4',
     borderTopWidth: 1,
+    backgroundColor: 'red',
   },
   preference: {
     flexDirection: 'row',

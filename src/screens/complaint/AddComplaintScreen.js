@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -9,16 +10,18 @@ import {
   Switch,
   Alert,
 } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
 import {ToggleHeader} from '../../components';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Api from '../../utils/Api';
-import DropDownPicker from 'react-native-dropdown-picker';
 import Colors from '../../utils/Colors';
+import {useSelector} from 'react-redux';
+import Authorization from '../../utils/Authorization';
 
-const SelectBoxItem = ({dataSource, onChangeHandler, ...rest}) => {
+const SelectBoxItem = ({sources, onChangeHandler, ...rest}) => {
   return (
     <DropDownPicker
-      items={dataSource}
+      items={sources}
       containerStyle={styles.searchableContainer}
       itemStyle={styles.searchableItem}
       style={{backgroundColor: Colors.White}}
@@ -30,8 +33,12 @@ const SelectBoxItem = ({dataSource, onChangeHandler, ...rest}) => {
 };
 
 function AddComplaintScreen(props) {
-  const [roles, setRoles] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const {userInfo} = useSelector((state) => state.AuthReducer);
+  const [dataSources, setDataSources] = useState({
+    roles: [],
+    categories: [],
+  });
+
   const [complaints, setComplaints] = useState({
     complaint_type_id: null,
     messages: '',
@@ -40,34 +47,52 @@ function AddComplaintScreen(props) {
   });
 
   const fetchRoles = async () => {
-    const {data} = await Api.get('/roles/type/complaint');
+    const results = await Api.get(
+      '/roles/type/complaint',
+      Authorization(userInfo.token),
+    );
+
     let r = [];
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < results.data.length; i++) {
       const element = {
-        label: data[i].name,
-        value: data[i].id,
+        label: results.data[i].name,
+        value: results.data[i].id,
       };
       r.push(element);
     }
-    setRoles(r);
+
+    setDataSources({
+      ...dataSources,
+      roles: r,
+    });
   };
 
   const onChangeRoles = async (item) => {
-    const {data} = await Api.get(`/complaint_types/find/${item.value}`);
+    const results = await Api.get(
+      `/complaint_types/find/${item.value}`,
+      Authorization(userInfo.token),
+    );
     let c = [];
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < results.data.length; i++) {
       const element = {
-        label: data[i].title,
-        value: data[i].id,
+        label: results.data[i].title,
+        value: results.data[i].id,
       };
       c.push(element);
     }
-    setCategories(c);
+    setDataSources({
+      ...dataSources,
+      categories: c,
+    });
   };
 
   const onSaveComplaint = async () => {
     try {
-      const result = await Api.post('/complaints/store', complaints);
+      const result = await Api.post(
+        '/complaints',
+        complaints,
+        Authorization(userInfo.token),
+      );
       console.log('Save Data', result.data);
       if (result.status === 200) {
         Alert.alert('Success', result.data.message, [
@@ -86,14 +111,13 @@ function AddComplaintScreen(props) {
   };
 
   useEffect(() => {
-    console.log('Component Did Mount');
     fetchRoles();
     return () => {};
   }, []);
 
   useEffect(() => {
     console.log('Component Update');
-  }, [categories]);
+  }, [dataSources.categories]);
 
   const onChangeComplaintHandler = (key, value) => {
     setComplaints({
@@ -117,7 +141,7 @@ function AddComplaintScreen(props) {
           <View style={styles.separator}>
             <Text style={styles.headingText}>Tujuan</Text>
             <SelectBoxItem
-              dataSource={roles}
+              sources={dataSources.roles}
               onChangeItem={(item) => onChangeRoles(item)}
               placeholder="Pilih tujuan pengaduan"
             />
@@ -127,7 +151,7 @@ function AddComplaintScreen(props) {
           <View style={styles.separator}>
             <Text style={styles.headingText}>Kategori</Text>
             <SelectBoxItem
-              dataSource={categories}
+              sources={dataSources.categories}
               onChangeItem={(item) =>
                 onChangeComplaintHandler('complaint_type_id', item.value)
               }

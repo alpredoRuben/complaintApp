@@ -8,8 +8,6 @@ export const loginAction = (form) => async (dispatch) => {
       password: form.password,
     });
 
-    console.log('RESULT OF REQUEST API', {data, status});
-
     if (status === 200) {
       dispatch({type: LOGIN_SUCCESS, payload: data});
     } else {
@@ -25,8 +23,8 @@ export const loginAction = (form) => async (dispatch) => {
 
 export const logout = () => async (dispatch) => {
   try {
-    const result = await Api.get('/logout');
-    console.log(result);
+    //const result = await Api.get('/logout');
+    // console.log('RESULT LOGOUT', result);
     dispatch({type: LOGOUT});
   } catch (err) {
     console.log(err.response);

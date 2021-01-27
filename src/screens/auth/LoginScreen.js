@@ -53,11 +53,11 @@ function LoginScreen(props) {
   };
 
   const checkAuth = () => {
-    if (userInfo !== null) {
+    if (userInfo && userInfo !== null) {
       props.navigation.navigate('DashboardDrawer');
     }
 
-    if (errors !== null) {
+    if (errors && errors !== null) {
       const errData = errors.data;
       console.log('ERROR RESPONSE', errData);
       Alert.alert('LOGIN FAILED', errData.message);
