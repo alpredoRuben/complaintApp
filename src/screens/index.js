@@ -15,6 +15,10 @@ import AddComplaintScreen, {
   optionAddComplaint,
 } from './complaint/AddComplaintScreen';
 
+import DetailNotificationScreen, {
+  optionDetailNotification,
+} from './notif/DetailNotificationScreen';
+
 export {
   LoginScreen,
   SplashScreen,
@@ -39,4 +43,7 @@ export {
   //AddComplaint
   AddComplaintScreen,
   optionAddComplaint,
+  //DetailNotification
+  DetailNotificationScreen,
+  optionDetailNotification,
 };

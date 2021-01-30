@@ -15,6 +15,11 @@ function DrawerContent(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
   const dispatch = useDispatch();
 
+  const signOut = () => {
+    dispatch(logout());
+    props.navigation.navigate({name: 'SplashScreen', params: {}});
+  };
+
   return (
     <View style={styles.drawerContent}>
       <DrawerContentScrollView>
@@ -76,8 +81,7 @@ function DrawerContent(props) {
             label="Logout"
             labelStyle={{color: 'white', fontWeight: 'bold'}}
             onPress={() => {
-              dispatch(logout());
-              props.navigation.navigate('SplashScreen');
+              signOut();
             }}
           />
         </Drawer.Section>

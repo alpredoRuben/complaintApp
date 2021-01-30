@@ -8,6 +8,9 @@ import Themes from './src/utils/Themes';
 import ConfigStore from './src/store';
 import Mains from './src/Main';
 
+import {Buffer} from 'buffer';
+global.Buffer = Buffer; // very important
+
 const {store, persistor} = ConfigStore();
 
 const App = () => {

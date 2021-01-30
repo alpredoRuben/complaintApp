@@ -1,5 +1,4 @@
 /* eslint-disable eqeqeq */
-/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect} from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -7,23 +6,44 @@ import io from 'socket.io-client';
 import DrawerContent from './partials/DrawerContent';
 import {useSelector} from 'react-redux';
 import {userRoutes, adminRoutes} from './drawerRoutes';
-import {showNotification, showNotificationWithDate} from '../components';
 import {SOCKET_IO_URL, STATIC_EVENT_CHANNEL} from '../utils/Config';
+import PushNotification from 'react-native-push-notification';
+import {Platform} from 'react-native';
 
 const CHN = STATIC_EVENT_CHANNEL();
-
 const Drawer = createDrawerNavigator();
 
-export default function MainNavigation({navigation}) {
+export default function MainNavigation() {
   const {userInfo} = useSelector((state) => state.AuthReducer);
+  let navigators;
+
+  const onShowNotification = (option) => {
+    console.log('push notification', option);
+    PushNotification.localNotification(option);
+  };
+
+  const setupPushNotification = (cancelId) => {
+    PushNotification.configure({
+      onNotification: function (notification) {
+        console.log('Notification', notification);
+        navigators.navigation.navigate('NotifScreen', {
+          screen: 'DetailNotificationScreen',
+          params: {
+            id: notification.id,
+          },
+        });
+      },
+      popInitialNotification: true,
+      requestPermissions: Platform.OS === 'ios',
+    });
+
+    PushNotification.cancelLocalNotifications({id: cancelId});
+  };
 
   useEffect(() => {
     if (!userInfo) {
-      console.log('COMPONENT DID MOUNT USER INFO');
-      navigation.navigate('SplashScreen');
+      navigators.navigation.navigate('SplashScreen');
     }
-
-    showNotification('Hello', 'This is Notification');
 
     const socket = io(SOCKET_IO_URL);
 
@@ -31,10 +51,17 @@ export default function MainNavigation({navigation}) {
     socket.on(
       `${CHN.complaint.channelName}:${CHN.complaint.eventName}`,
       (message) => {
-        console.log('Message', message);
-        const {messageNotif, receiverId} = message;
-        if (userInfo.user.id === receiverId) {
-          showNotificationWithDate('Pengaduan Baru', messageNotif);
+        if (userInfo.user.id == message.receiveData) {
+          const mobileNotif = message.mobileNotif;
+
+          setupPushNotification(mobileNotif.id);
+
+          onShowNotification({
+            id: mobileNotif.id,
+            title: 'Info Pengaduan Baru',
+            message: JSON.parse(mobileNotif.data).message,
+            data: {type: mobileNotif.type, receiver: message.receiveData},
+          });
         }
       },
     );
@@ -43,11 +70,20 @@ export default function MainNavigation({navigation}) {
     socket.on(
       `${CHN.assignedComplaint.channelName}:${CHN.assignedComplaint.eventName}`,
       (message) => {
-        console.log('Message', message);
-        const {assigned, receiveAssigned, messageNotif} = message;
+        console.log('userinfo', userInfo.user.id);
+        console.log('receive data', message.receiveData);
 
-        if (userInfo.user.id === receiveAssigned) {
-          showNotificationWithDate('Pengaduan Disetujui', messageNotif);
+        if (userInfo.user.id == message.receiveData) {
+          console.log(`CHANNEL ${CHN.assignedComplaint.channelName}`, message);
+          const mobileNotif = message.mobileNotif;
+          setupPushNotification(mobileNotif.id);
+
+          onShowNotification({
+            id: mobileNotif.id,
+            title: 'Konfirmasi dan Penugasan Pengaduan',
+            message: JSON.parse(mobileNotif.data).message,
+            data: {type: mobileNotif.type, receiver: message.receiveData},
+          });
         }
       },
     );
@@ -56,11 +92,19 @@ export default function MainNavigation({navigation}) {
     socket.on(
       `${CHN.assignedWorkingComplaint.channelName}:${CHN.assignedWorkingComplaint.eventName}`,
       (message) => {
-        console.log('Message', message);
-        const {data, receiveData, messageNotif} = message;
-        const filters = receiveData.filter((item) => item == userInfo.user.id);
-        if (filters.length > 0) {
-          showNotificationWithDate('Pengaduan Dikerjakan', messageNotif);
+        const filters = message.receiveData.filter(
+          (item) => item == userInfo.user.id,
+        );
+
+        if (filters.length > 0 && filters[0] == userInfo.user.id) {
+          const mobileNotif = message.mobileNotif;
+          setupPushNotification(mobileNotif.id);
+          onShowNotification({
+            id: mobileNotif.id,
+            title: 'Pengaduan Diterima dan Dikerjakan',
+            message: JSON.parse(mobileNotif.data).message,
+            data: {type: mobileNotif.type, receiver: message.receiveData},
+          });
         }
       },
     );
@@ -69,7 +113,11 @@ export default function MainNavigation({navigation}) {
   }, []);
 
   return (
-    <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
+    <Drawer.Navigator
+      drawerContent={(props) => {
+        navigators = props;
+        return <DrawerContent {...props} />;
+      }}>
       {userInfo.user.roles[0].slug.toLowerCase() === 'admin' &&
         adminRoutes.map((item, index) => (
           <Drawer.Screen

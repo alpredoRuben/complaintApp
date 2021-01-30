@@ -10,6 +10,7 @@ import {
   TypeComplaintScreen,
   ComplaintScreen,
   AddComplaintScreen,
+  DetailNotificationScreen,
   optionDashboard,
   optionProfile,
   optionNotif,
@@ -17,6 +18,7 @@ import {
   optionTypeComplaint,
   optionComplaint,
   optionAddComplaint,
+  optionDetailNotification,
 } from '../../screens';
 
 const navigatorScreenOption = () => ({
@@ -82,6 +84,11 @@ export const NotifStackScreen = () => {
         name="NotifScreen"
         component={NotifScreen}
         options={optionNotif}
+      />
+      <NotifStack.Screen
+        name="DetailNotificationScreen"
+        component={DetailNotificationScreen}
+        options={optionDetailNotification}
       />
     </NotifStack.Navigator>
   );
