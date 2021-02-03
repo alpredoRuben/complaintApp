@@ -13,7 +13,7 @@ const persistedReducer = persistReducer(
   {
     key: 'root',
     storage: AsyncStorage,
-    whitelist: ['AuthReducer'],
+    blacklist: ['AuthReducer'],
   },
   rootReducer,
 );

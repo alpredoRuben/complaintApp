@@ -14,13 +14,13 @@ function DashboardScreen(props) {
 
   const fetchInfo = async () => {
     try {
-      const results = await Api.get(
+      const {data, status} = await Api.get(
         '/information/complaints',
         Authorization(userInfo.token),
       );
-      console.log(results);
-      if (results.status === 200) {
-        setInfo(results.data.info);
+      console.log(data);
+      if (status === 200) {
+        setInfo(data.info);
       }
     } catch (err) {
       setError('Error Fetch Data');
@@ -28,10 +28,11 @@ function DashboardScreen(props) {
   };
 
   useEffect(() => {
-    console.log(userInfo);
     fetchInfo();
     return () => {};
   }, []);
+
+  console.log('info', userInfo);
 
   if (info === null || error !== null) {
     return (

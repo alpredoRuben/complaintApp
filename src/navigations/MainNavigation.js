@@ -5,7 +5,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import io from 'socket.io-client';
 import DrawerContent from './partials/DrawerContent';
 import {useSelector} from 'react-redux';
-import {userRoutes, adminRoutes} from './drawerRoutes';
+import drawerRoutes from './drawerRoutes';
 import {SOCKET_IO_URL, STATIC_EVENT_CHANNEL} from '../utils/Config';
 import PushNotification from 'react-native-push-notification';
 import {Platform} from 'react-native';
@@ -18,15 +18,13 @@ export default function MainNavigation() {
   let navigators;
 
   const onShowNotification = (option) => {
-    console.log('push notification', option);
     PushNotification.localNotification(option);
   };
 
   const setupPushNotification = (cancelId) => {
     PushNotification.configure({
       onNotification: function (notification) {
-        console.log('Notification', notification);
-        navigators.navigation.navigate('NotifScreen', {
+        navigators.navigation.navigate('NotifStackScreen', {
           screen: 'DetailNotificationScreen',
           params: {
             id: notification.id,
@@ -70,9 +68,6 @@ export default function MainNavigation() {
     socket.on(
       `${CHN.assignedComplaint.channelName}:${CHN.assignedComplaint.eventName}`,
       (message) => {
-        console.log('userinfo', userInfo.user.id);
-        console.log('receive data', message.receiveData);
-
         if (userInfo.user.id == message.receiveData) {
           console.log(`CHANNEL ${CHN.assignedComplaint.channelName}`, message);
           const mobileNotif = message.mobileNotif;
@@ -118,23 +113,13 @@ export default function MainNavigation() {
         navigators = props;
         return <DrawerContent {...props} />;
       }}>
-      {userInfo.user.roles[0].slug.toLowerCase() === 'admin' &&
-        adminRoutes.map((item, index) => (
-          <Drawer.Screen
-            key={`DR-${index}`}
-            name={item.name}
-            component={item.component}
-          />
-        ))}
-
-      {userInfo.user.roles[0].slug.toLowerCase() !== 'admin' &&
-        userRoutes.map((item, index) => (
-          <Drawer.Screen
-            key={`DR-${index}`}
-            name={item.name}
-            component={item.component}
-          />
-        ))}
+      {drawerRoutes.map((item, index) => (
+        <Drawer.Screen
+          key={`DR-${index}`}
+          name={item.name}
+          component={item.component}
+        />
+      ))}
     </Drawer.Navigator>
   );
 }

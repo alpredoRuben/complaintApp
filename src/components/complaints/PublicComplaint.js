@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
@@ -9,46 +10,61 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
-  TextInput,
+  Dimensions,
 } from 'react-native';
+import moment from 'moment';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Colors from '../../utils/Colors';
 import Api from '../../utils/Api';
 import Authorization from '../../utils/Authorization';
 import {useSelector} from 'react-redux';
-import {ButtonGroup} from 'react-native-elements';
+import {Button, Searchbar, FAB} from 'react-native-paper';
+import {ScrollView} from 'react-native-gesture-handler';
+
+const {width, height} = Dimensions.get('window');
 
 const elements = [
   {
+    element: () => <Text style={styles.elementsText}>Menunggu Disetujui</Text>,
+    key: 'not_assigned',
+    title: 'Menunggu Disetujui',
+  },
+  {
     element: () => <Text style={styles.elementsText}>Disetujui</Text>,
-    key: 'assign',
+    key: 'assigned',
+    title: 'Sudah Distujui',
   },
   {
     element: () => <Text style={styles.elementsText}>Dikerjakan</Text>,
-    key: 'work',
+    key: 'accepted',
+    title: 'Sedang Dalam Pengerjaan',
   },
   {
     element: () => <Text style={styles.elementsText}>Selesai</Text>,
-    key: 'finish',
+    key: 'finished',
+    title: 'Sudah Selesai',
   },
 ];
 
 export default function PublicComplaint(props) {
+  console.log('Complaint Screen', props);
   const {userInfo} = useSelector((state) => state.AuthReducer);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
   const [dataSource, setDataSource] = useState({
     errors: null,
-    search: '',
     page: 1,
     total: 0,
     loading: false,
     complaints: [],
   });
 
+  const [subtitle, setSubtitle] = useState(elements[0].title);
+
   const fetchComplaints = async () => {
     try {
       const results = await Api.get(
-        `/complaints?page=${dataSource.page}&search=${dataSource.search}&sentences=${elements[selectedIndex].key}`,
+        `/complaints?page=${dataSource.page}&search=${searchQuery}&sentences=${elements[selectedIndex].key}`,
         Authorization(userInfo.token),
       );
 
@@ -85,7 +101,7 @@ export default function PublicComplaint(props) {
     console.log('Now Selected Index is', selectedIndex);
     fetchComplaints();
     return () => {};
-  }, [dataSource.page, dataSource.search, selectedIndex]);
+  }, [dataSource.page, searchQuery, selectedIndex, subtitle]);
 
   const loadMore = (p) => {
     setDataSource({
@@ -96,26 +112,39 @@ export default function PublicComplaint(props) {
     fetchComplaints();
   };
 
+  const showDetailComplaint = (item) => {
+    console.log('This item is', item);
+    props.navigation.navigate('ComplaintStackScreen', {
+      screen: 'DetailComplaintScreen',
+      params: {id: item.id},
+    });
+  };
+
   const renderItem = ({item}) => {
     return (
-      <View style={styles.rowItemContainer}>
-        <View style={styles.rowItemLeft}>
-          <Text style={styles.rowItemTitle}>{item.type_complaint.title}</Text>
-          <Text style={styles.rowItemMessage}>{item.messages}</Text>
-          <Text style={styles.rowItemTime}>{item.created_at}</Text>
-        </View>
+      <TouchableOpacity onPress={() => showDetailComplaint(item)}>
+        <View style={styles.rowItemContainer}>
+          <View style={styles.rowItemLeft}>
+            <Text style={styles.rowItemTitle}>{item.title}</Text>
+            <Text style={styles.rowItemMessage}>{item.messages}</Text>
+            <Text style={[styles.rowItemTime, {marginTop: 10}]}>
+              {moment(item.created_att).format('DD MM YYYY, HH:mm:ss')}
+            </Text>
+          </View>
 
-        <View style={styles.rowItemRight}>
-          <Text style={styles.rowItemInfo(item.urgent ? '#a60000' : '#0fa811')}>
-            {item.urgent ? 'PENTING' : 'BIASA'}
-          </Text>
+          <View style={styles.rowItemRight}>
+            <Text
+              style={styles.rowItemInfo(item.urgent ? '#a60000' : '#0fa811')}>
+              {item.urgent ? 'PENTING' : 'BIASA'}
+            </Text>
 
-          <Text
-            style={styles.rowItemInfo(item.finished ? '#038c05' : '#b9cc0a')}>
-            {item.finished ? 'SELESAI' : 'DI PROSES'}
-          </Text>
+            <Text
+              style={styles.rowItemInfo(item.finished ? '#038c05' : '#b9cc0a')}>
+              {item.finished ? 'SELESAI' : 'DI PROSES'}
+            </Text>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -152,16 +181,14 @@ export default function PublicComplaint(props) {
     );
   };
 
-  const onChangeTextHandle = (text) => {
-    setDataSource({...dataSource, search: text});
-  };
-
-  const onSearchHandle = () => {
-    console.log(dataSource.search);
+  const onChangeSearch = (query) => {
+    console.log('Query Search', query);
+    setSearchQuery(query);
   };
 
   const updateSelectedIndex = (s) => {
     setSelectedIndex(s);
+    setSubtitle(elements[s].title);
     setDataSource({
       ...dataSource,
       page: 1,
@@ -170,74 +197,85 @@ export default function PublicComplaint(props) {
   };
 
   return (
-    <SafeAreaView style={styles.cover}>
-      <View style={styles.container(2, 'column')}>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={{flex: 1, flexDirection: 'column'}}>
+        <View
+          style={{
+            height: '8%',
+            width: '100%',
+
+            margin: 5,
+          }}>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <ScrollView
+              showsHorizontalScrollIndicator={false}
+              horizontal={true}>
+              {elements.map((item, index) => (
+                <View
+                  key={`BUTTON-${index}-${item.key}`}
+                  style={{
+                    width: 150,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Button
+                    key={`${item.key}-${index}`}
+                    mode="contained"
+                    style={{
+                      height: 50,
+                      flex: 1,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      backgroundColor: '#006f87',
+                      borderRadius: 10,
+                    }}
+                    onPress={() => updateSelectedIndex(index)}>
+                    <Text style={styles.elementsText}>{item.title}</Text>
+                  </Button>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+
+        <View
+          style={{
+            height: '5%',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: 10,
+          }}>
+          <View style={styles.middleCoverTitle}>
+            <Text style={styles.middleTitle}>{subtitle}</Text>
+          </View>
+        </View>
+
         <View
           style={{
             height: '10%',
-            width: '100%',
-            shadowColor: '#000',
-            shadowOffset: {
-              width: 0,
-              height: 4,
-            },
-            shadowOpacity: 0.32,
-            shadowRadius: 5.46,
-
-            elevation: 9,
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 5,
           }}>
-          <ButtonGroup
-            onPress={updateSelectedIndex}
-            buttons={elements}
-            selectedIndex={selectedIndex}
-            containerStyle={{marginHorizontal: 5, marginTop: 10}}
-            buttonStyle={{
-              padding: 10,
-              backgroundColor: '#029ea1',
-              borderWidth: 1,
-              borderColor: '#fff',
-            }}
+          <Searchbar
+            placeholder="Search"
+            onChangeText={onChangeSearch}
+            value={searchQuery}
           />
         </View>
 
-        <View style={styles.firstColumn}>
-          <View style={styles.topContainerColumn}>
-            <View style={styles.container(1, 'row')}>
-              <View style={styles.topLeftColumn}>
-                <TextInput
-                  autoCorrect={true}
-                  autoCapitalize="none"
-                  style={styles.textInputSearch}
-                  placeholder="Cari data pengaduan"
-                  onChangeText={(value) => onChangeTextHandle(value)}
-                  underlineColorAndroid="transparent"
-                />
-              </View>
-              <View style={styles.topRightColumn}>
-                <TouchableOpacity onPress={onSearchHandle}>
-                  <Icon name="search1" size={25} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.buttomContainerColumn}>
-            <View style={styles.container(2, 'column')}>
-              <View style={styles.middleCoverTitle}>
-                <Text style={styles.middleTitle}>List Data Pengaduan</Text>
-              </View>
-
-              <View style={styles.middleFlatList}>
-                <FlatList
-                  style={styles.cover}
-                  data={dataSource.complaints}
-                  renderItem={renderItem}
-                  keyExtractor={(item, index) => index.toString()}
-                  enableEmptySections={true}
-                  ListFooterComponent={renderFooter}
-                />
-              </View>
-            </View>
+        <View style={{height: '65%', padding: 10}}>
+          <View style={styles.middleFlatList}>
+            <FlatList
+              style={styles.cover}
+              data={dataSource.complaints}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              enableEmptySections={true}
+              ListFooterComponent={renderFooter}
+            />
           </View>
         </View>
 
@@ -250,6 +288,17 @@ export default function PublicComplaint(props) {
           </View>
         </View>
       </View>
+      <FAB
+        style={{
+          position: 'absolute',
+          margin: 10,
+          right: 0,
+          bottom: 0,
+        }}
+        icon="plus"
+        small
+        onPress={() => props.navigation.navigate('AddComplaintScreen')}
+      />
     </SafeAreaView>
   );
 }
@@ -257,28 +306,23 @@ export default function PublicComplaint(props) {
 const styles = StyleSheet.create({
   elementsText: {
     color: 'white',
-    fontSize: 10,
+    fontSize: 9,
     textAlign: 'center',
     textTransform: 'uppercase',
   },
   cover: {flex: 1},
   container: (number, direction) => ({flex: number, flexDirection: direction}),
   firstColumn: {
-    width: '100%',
     height: '80%',
     justifyContent: 'center',
-    position: 'relative',
-    flex: 2,
+    flex: 1,
     marginTop: 20,
     flexDirection: 'column',
     backgroundColor: '#f7f7f7',
   },
 
   topContainerColumn: {
-    height: '10%',
-    alignContent: 'center',
-    alignItems: 'center',
-    padding: '2%',
+    height: '5%',
   },
 
   topLeftColumn: {width: '80%', marginLeft: 10},
@@ -287,9 +331,7 @@ const styles = StyleSheet.create({
   buttomContainerColumn: {height: '90%', padding: '2%'},
 
   middleCoverTitle: {
-    width: '100%',
     height: '5%',
-    justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
   },
@@ -326,6 +368,12 @@ const styles = StyleSheet.create({
   coverTextButtonAdd: {width: '85%', marginLeft: 10},
 
   secondRightCover: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  fullRightCover: {
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',

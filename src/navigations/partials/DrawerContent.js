@@ -4,20 +4,18 @@ import {View, Text, StyleSheet} from 'react-native';
 import {Avatar, Title, Caption, Drawer} from 'react-native-paper';
 import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {adminRoutes, defaultRoutes} from '../routes';
 import Colors from '../../utils/Colors';
 import {UserAvatarPNG} from '../../assets';
 import {useSelector, useDispatch} from 'react-redux';
-import {} from '../../actions';
-import {logout} from '../../actions/AuthAction';
+import {logoutAction} from '../../actions/AuthAction';
+import {CommonActions} from '@react-navigation/native';
 
 function DrawerContent(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
   const dispatch = useDispatch();
 
   const signOut = () => {
-    dispatch(logout());
-    props.navigation.navigate({name: 'SplashScreen', params: {}});
+    dispatch(logoutAction());
   };
 
   return (
@@ -38,39 +36,61 @@ function DrawerContent(props) {
             </View>
           </View>
           <Drawer.Section style={styles.drawerSection}>
-            {userInfo.user.roles[0].slug.toLowerCase() === 'admin' &&
-              adminRoutes.map((item, index) => (
-                <DrawerItem
-                  key={`DI-${index}`}
-                  activeTintColor={Colors.PrimaryTransparancy}
-                  label={({color}) => (
-                    <Text style={{color}}>{item.drawerLabel}</Text>
-                  )}
-                  icon={({color, size}) => (
-                    <Icon name={item.drawerIcon} size={size} color={color} />
-                  )}
-                  onPress={() => {
-                    props.navigation.navigate(item.routeName);
-                  }}
-                />
-              ))}
+            {/* Item Menu Dashboard */}
+            <DrawerItem
+              activeTintColor={Colors.PrimaryTransparancy}
+              label={({color}) => <Text style={{color}}>Dashboard</Text>}
+              icon={({color, size}) => (
+                <Icon name="home-outline" size={size} color={color} />
+              )}
+              onPress={() => props.navigation.navigate('DashboardScreen')}
+            />
 
-            {userInfo.user.roles[0].slug.toLowerCase() !== 'admin' &&
-              defaultRoutes.map((item, index) => (
-                <DrawerItem
-                  key={`DI-${index}`}
-                  activeTintColor={Colors.PrimaryTransparancy}
-                  label={({color}) => (
-                    <Text style={{color}}>{item.drawerLabel}</Text>
-                  )}
-                  icon={({color, size}) => (
-                    <Icon name={item.drawerIcon} size={size} color={color} />
-                  )}
-                  onPress={() => {
-                    props.navigation.navigate(item.routeName);
-                  }}
-                />
-              ))}
+            {/* Item Menu Pengaduan */}
+            <DrawerItem
+              activeTintColor={Colors.PrimaryTransparancy}
+              label={({color}) => <Text style={{color}}>Pengaduan</Text>}
+              icon={({color, size}) => (
+                <Icon name="clipboard-outline" size={size} color={color} />
+              )}
+              onPress={() =>
+                props.navigation.navigate('ComplaintStackScreen', {
+                  screen: 'ComplaintScreen',
+                })
+              }
+            />
+
+            {/* Item Menu Notification */}
+            <DrawerItem
+              activeTintColor={Colors.PrimaryTransparancy}
+              label={({color}) => <Text style={{color}}>Notifikasi</Text>}
+              icon={({color, size}) => (
+                <Icon name="notifications" size={size} color={color} />
+              )}
+              onPress={() =>
+                props.navigation.dispatch(
+                  CommonActions.navigate('NotifStackScreen', {
+                    screen: 'NotifScreen',
+                  }),
+                )
+              }
+            />
+
+            {/* Item Menu Pengaturan */}
+            {userInfo.user.roles[0].slug.toLowerCase() === 'admin' && (
+              <DrawerItem
+                activeTintColor={Colors.PrimaryTransparancy}
+                label={({color}) => <Text style={{color}}>Pengaturan</Text>}
+                icon={({color, size}) => (
+                  <Icon name="settings-outline" size={size} color={color} />
+                )}
+                onPress={() =>
+                  props.navigation.navigate('SettingStackScreen', {
+                    screen: 'SettingScreen',
+                  })
+                }
+              />
+            )}
           </Drawer.Section>
         </View>
         <Drawer.Section style={styles.bottomDrawerSection}>

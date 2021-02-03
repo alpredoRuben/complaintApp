@@ -1,3 +1,7 @@
-import {loginAction, logoutAction} from './AuthAction';
+import {
+  successLoginAction,
+  failedLoginAction,
+  logoutAction,
+} from './AuthAction';
 
-export {loginAction, logoutAction};
+export {successLoginAction, failedLoginAction, logoutAction};

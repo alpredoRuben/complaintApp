@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Platform} from 'react-native';
+import {colors} from 'react-native-elements';
 import {TextInput} from 'react-native-gesture-handler';
 import Colors from '../../utils/Colors';
 
@@ -20,9 +21,8 @@ const Input = ({...rest}) => {
 
 const styles = StyleSheet.create({
   textInput: {
-    flex: 1,
-    marginTop: Platform.OS === 'ios' ? 0 : -12,
     paddingLeft: 10,
+    height: 45,
     color: '#05375a',
   },
 });

@@ -6,6 +6,20 @@ const {height} = Dimensions.get('screen');
 const height_logo = height * 0.28;
 
 const styles = StyleSheet.create({
+  //Login Screen
+  flexOne: {
+    flex: 1,
+  },
+
+  setMargin: (n) => ({margin: n}),
+
+  coverImage: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red',
+  },
+
   splashContainer: {
     flex: 1,
     backgroundColor: Colors.PrimaryBackground,
@@ -61,19 +75,21 @@ const styles = StyleSheet.create({
 
   loginContainer: {backgroundColor: Colors.White, height: '100%', padding: 5},
   loginImage: {width: 300, height: 250, marginHorizontal: 10},
-  loginTitle: {
+
+  textHeader: {
     fontSize: 28,
     fontFamily: 'bold',
     alignSelf: 'center',
   },
-  loginSubtitle: {
+  textSubHeader: {
     fontFamily: 'SemiBold',
     marginHorizontal: 40,
     textAlign: 'center',
     marginTop: 5,
-    marginBottom: 10,
-    opacity: 0.4,
+    marginBottom: 5,
+    opacity: 0.5,
   },
+
   loginTextLabel: {
     color: '#05375a',
     fontSize: 18,

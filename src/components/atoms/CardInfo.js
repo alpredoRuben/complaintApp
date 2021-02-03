@@ -2,14 +2,41 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Icon} from 'react-native-elements';
+import {Surface} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 
 const CardInfo = ({title, number, iconName, arrayColors, type}) => {
+  // return (
+  //   <LinearGradient colors={arrayColors} style={styles.linearGradient}>
+  //     <View style={styles.rowDirection}>
+  //       <View style={styles.iconCover}>
+  //         <Icon name={iconName} size={40} color="white" type={type} />
+  //       </View>
+  //       <View style={{width: '70%'}}>
+  //         <Text style={styles.cardTitle}>{title}</Text>
+  //       </View>
+
+  //       <View style={styles.centerWidth('15%')}>
+  //         <Text style={styles.cardInfo}>{number}</Text>
+  //       </View>
+  //     </View>
+  //   </LinearGradient>
+  // );
+
   return (
-    <LinearGradient colors={arrayColors} style={styles.linearGradient}>
+    <Surface
+      style={{
+        padding: 8,
+        height: 70,
+        backgroundColor: '#f7f7f7',
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 4,
+        marginVertical: 10,
+      }}>
       <View style={styles.rowDirection}>
         <View style={styles.iconCover}>
-          <Icon name={iconName} size={40} color="white" type={type} />
+          <Icon name={iconName} size={40} color="#0789a6" type={type} />
         </View>
         <View style={{width: '70%'}}>
           <Text style={styles.cardTitle}>{title}</Text>
@@ -19,7 +46,7 @@ const CardInfo = ({title, number, iconName, arrayColors, type}) => {
           <Text style={styles.cardInfo}>{number}</Text>
         </View>
       </View>
-    </LinearGradient>
+    </Surface>
   );
 };
 
@@ -41,13 +68,13 @@ const styles = StyleSheet.create({
   },
 
   rowDirection: {flex: 1, flexDirection: 'row'},
-  iconCover: {width: '15%', padding: 5, alignItems: 'center'},
+  iconCover: {width: '20%', padding: 5, alignItems: 'center'},
   cardTitle: {
     marginVertical: 15,
     marginLeft: 10,
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#f7f7f7',
+    color: '#0789a6',
   },
 
   cardInfo: {
@@ -55,7 +82,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#f7f7f7',
+    color: '#0789a6',
   },
 });
 

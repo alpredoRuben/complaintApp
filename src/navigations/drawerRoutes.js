@@ -1,47 +1,37 @@
 import BottomTabNavigator from './partials/BottomTabNavigator';
 import {
-  TypeComplaintStackScreen,
   ComplaintStackScreen,
+  SettingStackScreen,
+  InfoStackScreen,
   NotifStackScreen,
 } from './partials/StackScreenComponents';
 
-export const adminRoutes = [
+const drawerRoutes = [
   {
-    name: 'DashboardDrawer',
+    name: 'DashboardScreen',
     component: BottomTabNavigator,
     roles: 'all',
   },
   {
-    name: 'TypeComplaintScreen',
-    component: TypeComplaintStackScreen,
-    roles: 'admin',
-  },
-  {
-    name: 'ComplaintScreen',
+    name: 'ComplaintStackScreen',
     component: ComplaintStackScreen,
     roles: 'all',
   },
   {
-    name: 'NotifScreen',
+    name: 'SettingStackScreen',
+    component: SettingStackScreen,
+    roles: 'all',
+  },
+  {
+    name: 'InfoStackScreen',
+    component: InfoStackScreen,
+    roles: 'all',
+  },
+  {
+    name: 'NotifStackScreen',
     component: NotifStackScreen,
     roles: 'all',
   },
 ];
 
-export const userRoutes = [
-  {
-    name: 'DashboardDrawer',
-    component: BottomTabNavigator,
-    roles: 'all',
-  },
-  {
-    name: 'ComplaintScreen',
-    component: ComplaintStackScreen,
-    roles: 'all',
-  },
-  {
-    name: 'NotifScreen',
-    component: NotifStackScreen,
-    roles: 'all',
-  },
-];
+export default drawerRoutes;

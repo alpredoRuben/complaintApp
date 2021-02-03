@@ -7,18 +7,22 @@ import {
   ProfileScreen,
   NotifScreen,
   InfoScreen,
-  TypeComplaintScreen,
   ComplaintScreen,
   AddComplaintScreen,
-  DetailNotificationScreen,
   optionDashboard,
   optionProfile,
   optionNotif,
   optionInfo,
-  optionTypeComplaint,
   optionComplaint,
   optionAddComplaint,
+  DetailNotificationScreen,
   optionDetailNotification,
+  DetailComplaintScreen,
+  optionDetailComplaint,
+  SettingScreen,
+  optionSetting,
+  FinishComplaintScreen,
+  optionFinishComplaint,
 } from '../../screens';
 
 const navigatorScreenOption = () => ({
@@ -33,9 +37,9 @@ const navigatorScreenOption = () => ({
 const DashboardStack = createStackNavigator();
 const InfoStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
-const NotifStack = createStackNavigator();
-const TypeComplaintStack = createStackNavigator();
 const ComplaintStack = createStackNavigator();
+const SettingStack = createStackNavigator();
+const NotifStack = createStackNavigator();
 
 /** Dashboard Stack Screen */
 export function DashboardStackScreen() {
@@ -50,19 +54,6 @@ export function DashboardStackScreen() {
   );
 }
 
-/** Info Stack Screen */
-export const InfoStackScreen = () => {
-  return (
-    <InfoStack.Navigator screenOptions={navigatorScreenOption}>
-      <InfoStack.Screen
-        name="InfoScreen"
-        component={InfoScreen}
-        options={optionInfo}
-      />
-    </InfoStack.Navigator>
-  );
-};
-
 /** Profile Stack Screen */
 export const ProfileStackScreen = () => {
   return (
@@ -76,10 +67,69 @@ export const ProfileStackScreen = () => {
   );
 };
 
-/** Notification Screen */
+/** Complaint Screen */
+export const ComplaintStackScreen = () => {
+  return (
+    <ComplaintStack.Navigator
+      initialRouteName="ComplaintScreen"
+      name="ComplaintStackScreen"
+      screenOptions={navigatorScreenOption}>
+      <ComplaintStack.Screen
+        name="ComplaintScreen"
+        component={ComplaintScreen}
+        options={optionComplaint}
+      />
+      <ComplaintStack.Screen
+        name="AddComplaintScreen"
+        component={AddComplaintScreen}
+        options={optionAddComplaint}
+      />
+
+      <ComplaintStack.Screen
+        name="DetailComplaintScreen"
+        component={DetailComplaintScreen}
+        options={optionDetailComplaint}
+      />
+      <ComplaintStack.Screen
+        name="FinishComplaintScreen"
+        component={FinishComplaintScreen}
+        options={optionFinishComplaint}
+      />
+    </ComplaintStack.Navigator>
+  );
+};
+
+/** Setting Screen */
+export const SettingStackScreen = () => {
+  return (
+    <SettingStack.Navigator screenOptions={navigatorScreenOption}>
+      <SettingStack.Screen
+        name="SettingScreen"
+        component={SettingScreen}
+        options={optionSetting}
+      />
+    </SettingStack.Navigator>
+  );
+};
+
+/** Info Stack Screen */
+export const InfoStackScreen = () => {
+  return (
+    <InfoStack.Navigator screenOptions={navigatorScreenOption}>
+      <InfoStack.Screen
+        name="InfoScreen"
+        component={InfoScreen}
+        options={optionInfo}
+      />
+    </InfoStack.Navigator>
+  );
+};
+
 export const NotifStackScreen = () => {
   return (
-    <NotifStack.Navigator screenOptions={navigatorScreenOption}>
+    <NotifStack.Navigator
+      initialRouteName="NotifScreen"
+      screenOptions={navigatorScreenOption}>
       <NotifStack.Screen
         name="NotifScreen"
         component={NotifScreen}
@@ -91,36 +141,5 @@ export const NotifStackScreen = () => {
         options={optionDetailNotification}
       />
     </NotifStack.Navigator>
-  );
-};
-
-/** Type Complaint Screen */
-export const TypeComplaintStackScreen = () => {
-  return (
-    <TypeComplaintStack.Navigator screenOptions={navigatorScreenOption}>
-      <TypeComplaintStack.Screen
-        name="TypeComplaintScreen"
-        component={TypeComplaintScreen}
-        options={optionTypeComplaint}
-      />
-    </TypeComplaintStack.Navigator>
-  );
-};
-
-/** Complaint Screen */
-export const ComplaintStackScreen = () => {
-  return (
-    <ComplaintStack.Navigator screenOptions={navigatorScreenOption}>
-      <ComplaintStack.Screen
-        name="ComplaintScreen"
-        component={ComplaintScreen}
-        options={optionComplaint}
-      />
-      <ComplaintStack.Screen
-        name="AddComplaintScreen"
-        component={AddComplaintScreen}
-        options={optionAddComplaint}
-      />
-    </ComplaintStack.Navigator>
   );
 };

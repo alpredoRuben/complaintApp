@@ -10,6 +10,8 @@ target 'appComplaint' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'react-native-background-actions', :path => '../node_modules/react-native-background-actions'
+
   target 'appComplaintTests' do
     inherit! :complete
     # Pods for testing

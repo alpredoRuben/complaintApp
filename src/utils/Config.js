@@ -1,6 +1,9 @@
 export const REACT_NATIVE_API_URL = 'http://192.168.43.168:8000/api';
 export const SOCKET_IO_URL = 'http://192.168.43.168:8005';
 
+// export const REACT_NATIVE_API_URL = 'http://192.168.1.15:8000/api'; //Host BOBO
+// export const SOCKET_IO_URL = 'http://192.168.1.15:8005'; //Socket Bobo
+
 export const STATIC_EVENT_CHANNEL = () => ({
   complaint: {
     channelName: 'complaint-channel',

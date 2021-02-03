@@ -8,158 +8,123 @@ import {
   TextInput,
   ScrollView,
   Switch,
+  TouchableOpacity,
   Alert,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {ToggleHeader} from '../../components';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import Api from '../../utils/Api';
 import Colors from '../../utils/Colors';
 import {useSelector} from 'react-redux';
 import Authorization from '../../utils/Authorization';
 
-const SelectBoxItem = ({sources, onChangeHandler, ...rest}) => {
-  return (
-    <DropDownPicker
-      items={sources}
-      containerStyle={styles.searchableContainer}
-      itemStyle={styles.searchableItem}
-      style={{backgroundColor: Colors.White}}
-      placeholderStyle={{color: Colors.LightGray}}
-      onChangeItem={onChangeHandler}
-      {...rest}
-    />
-  );
-};
-
-function AddComplaintScreen(props) {
+export default function AddComplaintScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
-  const [dataSources, setDataSources] = useState({
-    roles: [],
-    categories: [],
-  });
-
-  const [complaints, setComplaints] = useState({
-    complaint_type_id: null,
+  const [roles, setRoles] = useState([]);
+  const [complaint, setComplaint] = useState({
+    title: '',
     messages: '',
-    urgent: false,
-    user_complaint_id: 2,
+    is_urgent: false,
+    type_id: null,
   });
 
   const fetchRoles = async () => {
-    const results = await Api.get(
-      '/roles/type/complaint',
-      Authorization(userInfo.token),
-    );
-
-    let r = [];
-    for (let i = 0; i < results.data.length; i++) {
-      const element = {
-        label: results.data[i].name,
-        value: results.data[i].id,
-      };
-      r.push(element);
-    }
-
-    setDataSources({
-      ...dataSources,
-      roles: r,
-    });
-  };
-
-  const onChangeRoles = async (item) => {
-    const results = await Api.get(
-      `/complaint_types/find/${item.value}`,
-      Authorization(userInfo.token),
-    );
-    let c = [];
-    for (let i = 0; i < results.data.length; i++) {
-      const element = {
-        label: results.data[i].title,
-        value: results.data[i].id,
-      };
-      c.push(element);
-    }
-    setDataSources({
-      ...dataSources,
-      categories: c,
-    });
-  };
-
-  const onSaveComplaint = async () => {
     try {
-      const result = await Api.post(
-        '/complaints',
-        complaints,
+      const {data, status} = await Api.get(
+        '/operational/roles',
         Authorization(userInfo.token),
       );
-      console.log('Save Data', result.data);
-      if (result.status === 200) {
-        Alert.alert('Success', result.data.message, [
+
+      if (status === 200) {
+        let r = [];
+        for (let i = 0; i < data.length; i++) {
+          const element = {
+            label: data[i].name,
+            value: data[i].id,
+          };
+          r.push(element);
+        }
+
+        setRoles(r);
+      }
+    } catch (err) {}
+  };
+
+  const onChangeRoles = (item) => {
+    setComplaint({...complaint, type_id: item.value});
+  };
+
+  const complaintChangeHandler = (key, value) => {
+    setComplaint({...complaint, [key]: value});
+  };
+
+  const sendComplaint = async () => {
+    try {
+      const {data, status} = await Api.post(
+        '/complaints',
+        complaint,
+        Authorization(userInfo.token),
+      );
+
+      if (status === 200) {
+        Alert.alert('BERHASIL', data.message, [
           {
             text: 'OK',
             onPress: () => {
-              console.log('Pressed Ok');
-              props.navigation.navigate('ComplaintScreen');
+              props.navigation.replace('ComplaintScreen');
             },
           },
         ]);
       }
     } catch (err) {
-      console.log(err.response);
+      Alert.alert(
+        'GAGAL',
+        err.response.data.message,
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+        ],
+        {cancelable: false},
+      );
     }
+  };
+
+  const submitComplaintHandler = () => {
+    sendComplaint();
   };
 
   useEffect(() => {
     fetchRoles();
     return () => {};
-  }, []);
-
-  useEffect(() => {
-    console.log('Component Update');
-  }, [dataSources.categories]);
-
-  const onChangeComplaintHandler = (key, value) => {
-    setComplaints({
-      ...complaints,
-      [key]: value,
-    });
-  };
-
-  const onSubmitComplaintHandler = (e) => {
-    console.log('Complaints', complaints);
-    onSaveComplaint();
-  };
+  }, [props.navigation]);
 
   return (
     <SafeAreaView style={styles.cover}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
-          <Text style={styles.titleText}>Form Buat Pengaduan Baru</Text>
+          <Text style={styles.titleText}>Kirim Pengaduan Baru</Text>
 
-          {/* Tujuan */}
+          {/* Field Tujuan */}
           <View style={styles.separator}>
             <Text style={styles.headingText}>Tujuan</Text>
             <SelectBoxItem
-              sources={dataSources.roles}
+              sources={roles}
               onChangeItem={(item) => onChangeRoles(item)}
-              placeholder="Pilih tujuan pengaduan"
+              placeholder="Tujuan Pengaduan"
             />
           </View>
 
-          {/* Kategori */}
+          {/* Judul Pengaduan */}
           <View style={styles.separator}>
-            <Text style={styles.headingText}>Kategori</Text>
-            <SelectBoxItem
-              sources={dataSources.categories}
-              onChangeItem={(item) =>
-                onChangeComplaintHandler('complaint_type_id', item.value)
-              }
-              placeholder="Pilih kategori pengaduan"
-              searchable={true}
-              searchablePlaceholder="Cari kategori pengaduan"
-              searchablePlaceholderTextColor={Colors.PrimaryBackground}
-              searchableError={() => <Text>Tidak Ditemukan</Text>}
+            <Text style={styles.headingText}>Judul</Text>
+            <TextInput
+              style={styles.textDefault}
+              onChangeText={(val) => complaintChangeHandler('title', val)}
+              value={complaint.title}
+              textAlignVertical="top"
             />
           </View>
 
@@ -169,8 +134,8 @@ function AddComplaintScreen(props) {
             <TextInput
               multiline={true}
               style={styles.textMultiline}
-              onChangeText={(val) => onChangeComplaintHandler('messages', val)}
-              value={complaints.value}
+              onChangeText={(val) => complaintChangeHandler('messages', val)}
+              value={complaint.messages}
               textAlignVertical="top"
             />
           </View>
@@ -179,17 +144,17 @@ function AddComplaintScreen(props) {
           <View style={styles.separator}>
             <View style={styles.switchContainer}>
               <Text>
-                {complaints.urgent
+                {complaint.is_urgent
                   ? 'Pengaduan Bersifat Penting'
                   : 'Biasa (Normal)'}
               </Text>
               <Switch
                 trackColor={{false: '#919191', true: '#07a641'}}
-                thumbColor={complaints.urgent ? '#0460c9' : '#d4d4d4'}
+                thumbColor={complaint.is_urgent ? '#0460c9' : '#d4d4d4'}
                 onValueChange={() =>
-                  setComplaints({...complaints, urgent: !complaints.urgent})
+                  complaintChangeHandler('is_urgent', !complaint.is_urgent)
                 }
-                value={complaints.urgent}
+                value={complaint.is_urgent}
               />
             </View>
           </View>
@@ -198,17 +163,19 @@ function AddComplaintScreen(props) {
           <View style={styles.separator}>
             <TouchableOpacity
               style={styles.coverButtonSubmit}
-              onPress={onSubmitComplaintHandler}>
-              <Text style={styles.textButtonSubmit}>Simpan & Tambahkan</Text>
+              onPress={submitComplaintHandler}>
+              <Text style={styles.textButtonSubmit}>Kirim</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Go To Complaint Screen */}
+          {/* Back To */}
           <View style={styles.separator}>
             <TouchableOpacity
               style={styles.coverBackTo}
-              onPress={() => props.navigation.navigate('ComplaintScreen')}>
-              <Text style={styles.textButtonSubmit}>List Pengaduan</Text>
+              onPress={() => {
+                props.navigation.replace('ComplaintScreen');
+              }}>
+              <Text style={styles.textButtonSubmit}>Batal & Kembali</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -232,6 +199,23 @@ export const optionAddComplaint = (props) => {
       alignSelf: 'center',
     },
   };
+};
+
+const SelectBoxItem = ({sources, onChangeHandler, ...rest}) => {
+  return (
+    <DropDownPicker
+      items={sources}
+      containerStyle={styles.searchableContainer}
+      itemStyle={styles.searchableItem}
+      style={{backgroundColor: Colors.White}}
+      placeholderStyle={{color: Colors.LightGray}}
+      searchable={true}
+      searchablePlaceholderTextColor={Colors.PrimaryBackground}
+      searchableError={() => <Text>Tidak Ditemukan</Text>}
+      onChangeItem={onChangeHandler}
+      {...rest}
+    />
+  );
 };
 
 const styles = StyleSheet.create({
@@ -263,6 +247,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     lineHeight: 23,
   },
+  textDefault: {
+    height: 40,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    paddingHorizontal: 15,
+    backgroundColor: Colors.White,
+    fontSize: 12,
+  },
   coverButtonSubmit: {
     marginTop: 10,
     backgroundColor: Colors.SecondBackground,
@@ -272,7 +264,7 @@ const styles = StyleSheet.create({
 
   coverBackTo: {
     marginTop: 10,
-    backgroundColor: Colors.Back,
+    backgroundColor: 'red',
     borderRadius: 5,
     paddingVertical: 13,
   },
@@ -302,5 +294,3 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
   },
 });
-
-export default AddComplaintScreen;
