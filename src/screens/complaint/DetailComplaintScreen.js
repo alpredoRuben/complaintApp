@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
@@ -34,14 +35,15 @@ export default function DetailComplaintScreen(props) {
         console.log(data);
         setComplaint(data.result);
 
-        setReady(
-          data.result.assigned !== null &&
-            !data.result.assigned.is_accepted &&
-            userInfo.user.roles[0].slug !== 'admin' &&
-            userInfo.user.roles[0].slug !== 'pegawai'
-            ? false
-            : true,
-        );
+        if (data.result.assigned === null) {
+          setReady(false);
+        } else {
+          if (data.result.assigned.is_accepted == false) {
+            setReady(false);
+          } else {
+            setReady(true);
+          }
+        }
       }
     } catch (err) {
       console.log(err.response);
@@ -93,12 +95,14 @@ export default function DetailComplaintScreen(props) {
     setReady(true);
   };
 
+  const assignedComplaint = () => {};
+
   const submitFinishedWork = () => {
     console.log('Complaint', complaint);
     props.navigation.navigate('ComplaintStackScreen', {
       screen: 'FinishComplaintScreen',
       params: {
-        complaintId: complaint.id,
+        id: complaint.id,
       },
     });
   };
@@ -161,7 +165,9 @@ export default function DetailComplaintScreen(props) {
           {complaint.executor && complaint.executor != null && (
             <View style={styles.dividerHorizonTop(10, 15)}>
               <Text style={styles.textLabel}>Pelaksana Pengaduan</Text>
-              <Text style={styles.textMessage}>{complaint.executor.name}</Text>
+              <Text style={[styles.textMessage, {fontWeight: 'bold'}]}>
+                {complaint.executor.name + ' (' + complaint.types.name + ')'}
+              </Text>
             </View>
           )}
 
@@ -216,7 +222,7 @@ export default function DetailComplaintScreen(props) {
                 </Text>
                 <View
                   style={styles.coverDynamic(
-                    complaint.assigned.is_accepted ? '#0f8009' : '#c97602',
+                    complaint.assigned.is_accepted ? '#800675' : '#c97602',
                     '100%',
                   )}>
                   <Text style={styles.textWhiteDynamic}>
@@ -228,7 +234,46 @@ export default function DetailComplaintScreen(props) {
               </View>
             )}
 
-          {ready === false ? (
+          {/* ASSIGNED */}
+          {userInfo.user.roles[0].slug === 'admin' && (
+            <View style={styles.dividerHorizonTop(10, 15)}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#b34c07',
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={assignedComplaint}>
+                <View style={{margin: 10}}>
+                  <Text style={{fontSize: 16, color: 'white'}}>
+                    Penugasan Pengaduan
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* BUTTON TO USER OPERATIONAL */}
+          {userInfo.user.roles[0].slug === 'admin' ||
+          userInfo.user.roles[0].slug === 'pegawai' ? null : ready === true ? (
+            <View style={styles.dividerHorizonTop(10, 15)}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#128c37',
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={submitFinishedWork}>
+                <View style={{margin: 10}}>
+                  <Text style={{fontSize: 16, color: 'white'}}>
+                    Pekerjaan Selesai
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          ) : (
             <View style={styles.dividerHorizonTop(10, 15)}>
               <TouchableOpacity
                 style={{
@@ -245,29 +290,12 @@ export default function DetailComplaintScreen(props) {
                 </View>
               </TouchableOpacity>
             </View>
-          ) : (
-            <View style={styles.dividerHorizonTop(10, 15)}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#068a9e',
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onPress={submitFinishedWork}>
-                <View style={{margin: 10}}>
-                  <Text style={{fontSize: 16, color: 'white'}}>
-                    Pekerjaan Selesai
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
           )}
 
           <View style={styles.dividerHorizonVertical(10, 15)}>
             <TouchableOpacity
               style={{
-                backgroundColor: '#9c0820',
+                backgroundColor: '#637876',
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',

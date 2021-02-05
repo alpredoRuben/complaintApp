@@ -4,4 +4,12 @@ import {
   logoutAction,
 } from './AuthAction';
 
-export {successLoginAction, failedLoginAction, logoutAction};
+import {setTotalNotif, resetTotalNotif} from './NotificationAction';
+
+export {
+  successLoginAction,
+  failedLoginAction,
+  logoutAction,
+  setTotalNotif,
+  resetTotalNotif,
+};

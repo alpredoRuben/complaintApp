@@ -27,7 +27,7 @@ function NotifScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
   const [notifications, setNotifications] = React.useState([]);
   const [total, setTotal] = React.useState(0);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const [query, setQuery] = React.useState({
     is_read: false,
     page: 1,
@@ -55,16 +55,17 @@ function NotifScreen(props) {
     } catch (err) {
       console.log('Error Fetch Notifications ', err.response);
     }
+
+    setLoading(false);
   };
 
   React.useEffect(() => {
-    setLoading(true);
     fetchNotifications();
-    setLoading(false);
     return () => {};
   }, [query.page, query.is_read, query.message, query.is_active]);
 
   const onTopButtonPressHandler = (key, index) => {
+    setLoading(true);
     setQuery({
       ...query,
       is_read: key === 'read' ? true : false,
@@ -75,6 +76,7 @@ function NotifScreen(props) {
   };
 
   const loadMore = (p) => {
+    setLoading(true);
     setQuery({
       ...query,
       page: p,

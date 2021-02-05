@@ -12,12 +12,12 @@ import {CommonActions} from '@react-navigation/native';
 
 function DrawerContent(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
+  const {total} = useSelector((state) => state.SetTotalNotification);
   const dispatch = useDispatch();
 
   const signOut = () => {
     dispatch(logoutAction());
   };
-
   return (
     <View style={styles.drawerContent}>
       <DrawerContentScrollView>
@@ -35,7 +35,7 @@ function DrawerContent(props) {
               </View>
             </View>
           </View>
-          <Drawer.Section style={styles.drawerSection}>
+          <Drawer.Section style={[styles.drawerSection, {margin: 0}]}>
             {/* Item Menu Dashboard */}
             <DrawerItem
               activeTintColor={Colors.PrimaryTransparancy}
@@ -63,7 +63,30 @@ function DrawerContent(props) {
             {/* Item Menu Notification */}
             <DrawerItem
               activeTintColor={Colors.PrimaryTransparancy}
-              label={({color}) => <Text style={{color}}>Notifikasi</Text>}
+              label={({color}) => (
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    padding: 10,
+                  }}>
+                  <View style={{width: '85%'}}>
+                    <Text style={{color}}>Notifikasi</Text>
+                  </View>
+                  <View
+                    style={{
+                      width: '10%',
+                      flex: 1,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: total > 0 ? 'red' : 'white',
+                      paddingHorizontal: 2,
+                      borderRadius: 10,
+                    }}>
+                    <Text style={{color: 'white'}}>{total}</Text>
+                  </View>
+                </View>
+              )}
               icon={({color, size}) => (
                 <Icon name="notifications" size={size} color={color} />
               )}
@@ -93,19 +116,19 @@ function DrawerContent(props) {
             )}
           </Drawer.Section>
         </View>
-        <Drawer.Section style={styles.bottomDrawerSection}>
-          <DrawerItem
-            icon={({color, size}) => (
-              <Icon name="ios-trail-sign-outline" color="white" size={size} />
-            )}
-            label="Logout"
-            labelStyle={{color: 'white', fontWeight: 'bold'}}
-            onPress={() => {
-              signOut();
-            }}
-          />
-        </Drawer.Section>
       </DrawerContentScrollView>
+      <Drawer.Section style={styles.bottomDrawerSection}>
+        <DrawerItem
+          icon={({color, size}) => (
+            <Icon name="ios-trail-sign-outline" color="white" size={size} />
+          )}
+          label="Logout"
+          labelStyle={{color: 'white', fontWeight: 'bold'}}
+          onPress={() => {
+            signOut();
+          }}
+        />
+      </Drawer.Section>
     </View>
   );
 }

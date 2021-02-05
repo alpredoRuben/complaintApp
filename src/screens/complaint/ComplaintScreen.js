@@ -169,7 +169,9 @@ function ComplaintScreen(props) {
                   }}>
                   Pelaksana Pengaduan
                 </Text>
-                <Text style={{fontSize: 11}}>{item.executor.name}</Text>
+                <Text style={{fontSize: 11}}>
+                  {item.executor.name + ' (' + item.types.name + ')'}
+                </Text>
               </>
             )}
             <Text
@@ -211,6 +213,12 @@ function ComplaintScreen(props) {
                   : 'MENUNGGU KONFIRMASI'}
               </Text>
             ) : null}
+
+            {item.types && item.types !== null && (
+              <Text style={styles.rowItemInfo('#70035c')}>
+                {`TUJUAN ${item.types.name.toUpperCase()}`}
+              </Text>
+            )}
           </View>
         </View>
       </TouchableOpacity>
