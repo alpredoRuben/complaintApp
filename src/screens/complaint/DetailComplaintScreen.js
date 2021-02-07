@@ -73,7 +73,7 @@ export default function DetailComplaintScreen(props) {
         `accept/assigned/${complaint.assigned.id}/complaints`,
         Authorization(userInfo.token),
       );
-      console.log(data);
+
       if (status === 200) {
         Alert.alert('KONFIRMASI BERHASIL', data.message, [
           {
@@ -105,6 +105,62 @@ export default function DetailComplaintScreen(props) {
         id: complaint.id,
       },
     });
+  };
+
+  const renderButton = () => {
+    const slug = userInfo.user.roles[0].slug;
+    if (slug !== 'admin' && slug !== 'pegawai') {
+      if (
+        complaint.is_finished == false &&
+        complaint.assigned != null &&
+        complaint.assigned.is_accepted == false
+      ) {
+        return (
+          <View style={styles.dividerHorizonTop(10, 15)}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#068a9e',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onPress={confirmComplaintHandler}>
+              <View style={{margin: 10}}>
+                <Text style={{fontSize: 16, color: 'white'}}>
+                  Konfirmasi & Ambil Pekerjaan
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        );
+      }
+
+      if (
+        complaint.is_finished == false &&
+        complaint.assigned != null &&
+        complaint.assigned.is_accepted == true
+      ) {
+        return (
+          <View style={styles.dividerHorizonTop(10, 15)}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#128c37',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onPress={submitFinishedWork}>
+              <View style={{margin: 10}}>
+                <Text style={{fontSize: 16, color: 'white'}}>
+                  Pekerjaan Selesai
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        );
+      }
+    }
+    return null;
   };
 
   if (complaint === null) {
@@ -255,42 +311,12 @@ export default function DetailComplaintScreen(props) {
           )}
 
           {/* BUTTON TO USER OPERATIONAL */}
-          {userInfo.user.roles[0].slug === 'admin' ||
-          userInfo.user.roles[0].slug === 'pegawai' ? null : ready === true ? (
-            <View style={styles.dividerHorizonTop(10, 15)}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#128c37',
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onPress={submitFinishedWork}>
-                <View style={{margin: 10}}>
-                  <Text style={{fontSize: 16, color: 'white'}}>
-                    Pekerjaan Selesai
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.dividerHorizonTop(10, 15)}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#068a9e',
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onPress={confirmComplaintHandler}>
-                <View style={{margin: 10}}>
-                  <Text style={{fontSize: 16, color: 'white'}}>
-                    Konfirmasi & Ambil Pekerjaan
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          )}
+          {renderButton()}
+
+          {userInfo.user.roles[0].slug !== 'admin' &&
+            userInfo.user.roles[0].slug !== 'pegawai' &&
+            complaint.is_finished === false &&
+            complaint.is}
 
           <View style={styles.dividerHorizonVertical(10, 15)}>
             <TouchableOpacity

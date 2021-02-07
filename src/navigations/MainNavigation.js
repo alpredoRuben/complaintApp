@@ -133,7 +133,6 @@ export default function MainNavigation() {
     socket.on(
       `${CHN.assignedWorkingComplaint.channelName}:${CHN.assignedWorkingComplaint.eventName}`,
       (message) => {
-        console.log('Start Working', message);
         const filters = message.receiveData.filter(
           (item) => item == userInfo.user.id,
         );

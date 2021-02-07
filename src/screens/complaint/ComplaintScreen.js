@@ -22,17 +22,14 @@ import {useSelector} from 'react-redux';
 
 const elements = [
   {
-    element: () => <Text style={styles.elementsText}>Menunggu Disetujui</Text>,
     key: 'not_assigned',
     title: 'Menunggu Disetujui',
   },
   {
-    element: () => <Text style={styles.elementsText}>Disetujui</Text>,
     key: 'assigned_accepted',
     title: 'Distujui & Dikerjakan',
   },
   {
-    element: () => <Text style={styles.elementsText}>Selesai</Text>,
     key: 'finished',
     title: 'Sudah Selesai',
   },

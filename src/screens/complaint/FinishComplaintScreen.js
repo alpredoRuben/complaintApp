@@ -1,7 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {View, Text, Image, ScrollView, TextInput} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TextInput,
+  Platform,
+  Alert,
+} from 'react-native';
 import {ActivityIndicator, Colors, Button} from 'react-native-paper';
 import ImagePicker from 'react-native-image-picker';
 import {useSelector} from 'react-redux';
@@ -13,10 +21,13 @@ export default function FinishComplaintScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
   const [complaint, setComplaint] = React.useState({});
   const [loading, setLoading] = React.useState(true);
+  const [isImage, setIsImage] = React.useState(false);
+
   const [uploader, setUploader] = React.useState({
+    assigned_id: null,
+    description: null,
+    file_upload: null,
     sources: null,
-    references: null,
-    uri: null,
   });
 
   const fetchComplaint = async () => {
@@ -28,6 +39,7 @@ export default function FinishComplaintScreen(props) {
 
       if (status === 200) {
         setComplaint(data.result);
+        setUploader({...uploader, assigned_id: data.result.assigned.id});
       }
     } catch (err) {
       const responseError = err.response;
@@ -54,36 +66,101 @@ export default function FinishComplaintScreen(props) {
   }
 
   const onUploadHandler = () => {
-    const options = {
-      title: 'Upload File Gambar',
-      customButtons: [{name: 'fb', title: 'Choose Photo from Facebook'}],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
+    ImagePicker.showImagePicker(
+      {
+        title: 'Upload Gambar',
+        storageOptions: {
+          skipBackup: true,
+          path: 'images',
+        },
+        mediaType: 'photo',
+        allowsEditing: true,
+        maxWidth: 400,
+        maxHeight: 300,
+        quality: 0.5,
       },
-    };
+      (response) => {
+        console.log('Response from Image Picker Show Image', response);
 
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response from Image Picker Show Image', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        setUploader({
-          ...uploader,
-          sources: {uri: response.uri},
-          references: response.data,
-          uri: response.uri,
-        });
-      }
-    });
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.error) {
+          console.log('ImagePicker Error: ', response.error);
+        } else if (response.customButton) {
+          console.log('User tapped custom button: ', response.customButton);
+        } else {
+          console.log('Response', response);
+          setIsImage(true);
+          setUploader({
+            ...uploader,
+            sources: {uri: response.uri},
+            file_upload: {
+              name: response.fileName,
+              type: response.type,
+              uri:
+                Platform.OS === 'android'
+                  ? response.uri
+                  : response.uri.replace('file://', ''),
+            },
+          });
+        }
+      },
+    );
   };
 
-  const onSubmitFinishedHandler = () => {};
+  const finishedComplaint = async (form_data) => {
+    try {
+      console.log('Uploader', uploader);
+
+      const {data, status} = await Api.post('finished/complaint', form_data, {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (status === 200) {
+        console.log('Message', data.message);
+        Alert.alert('BERHASIL', data.message, [
+          {
+            text: 'OK',
+            onPress: () => props.navigation.navigate('ComplaintScreen'),
+          },
+        ]);
+      }
+    } catch (err) {
+      console.log(err.response);
+      const {data, status} = err.response;
+
+      if (status === 422) {
+        Alert.alert('GAGAL', 'Ops.. Mohon isi data dengan lengkap', [
+          {
+            text: 'TUTUP',
+            onPress: () => console.log(data),
+          },
+        ]);
+      } else {
+        Alert.alert('GAGAL', data.message, [
+          {
+            text: 'TUTUP',
+            onPress: () => console.log(data),
+          },
+        ]);
+      }
+    }
+  };
+
+  const onSubmitFinishedHandler = () => {
+    var dataUpload = new FormData();
+    dataUpload.append('assigned_id', uploader.assigned_id);
+    dataUpload.append('description', uploader.description);
+    dataUpload.append('file_upload', uploader.file_upload);
+    finishedComplaint(dataUpload);
+  };
+
+  const onChangeTextHandler = (key, value) => {
+    setUploader({...uploader, [key]: value});
+  };
 
   return (
     <View style={{flex: 1, padding: 10, flexDirection: 'column'}}>
@@ -197,6 +274,8 @@ export default function FinishComplaintScreen(props) {
               lineHeight: 23,
             }}
             textAlignVertical="top"
+            onChangeText={(val) => onChangeTextHandler('description', val)}
+            value={uploader.description}
           />
         </View>
 
@@ -211,22 +290,24 @@ export default function FinishComplaintScreen(props) {
           </Text>
         </View>
 
-        <View
-          style={{
-            paddingVertical: 5,
-            justifyContent: 'center',
-            flexDirection: 'row',
-          }}>
-          <Image
-            source={uploader.sources}
+        {isImage && (
+          <View
             style={{
-              width: '100%',
-              height: 200,
-              margin: 0,
-              backgroundColor: '#f7f7f7',
-            }}
-          />
-        </View>
+              paddingVertical: 5,
+              justifyContent: 'center',
+              flexDirection: 'row',
+            }}>
+            <Image
+              source={uploader.sources}
+              style={{
+                width: '100%',
+                height: 300,
+                margin: 0,
+                backgroundColor: '#f7f7f7',
+              }}
+            />
+          </View>
+        )}
 
         <View
           style={{
