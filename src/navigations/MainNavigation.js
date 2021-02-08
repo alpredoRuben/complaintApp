@@ -11,16 +11,14 @@ import {SOCKET_IO_URL, STATIC_EVENT_CHANNEL} from '../utils/Config';
 import PushNotification from 'react-native-push-notification';
 import {Platform} from 'react-native';
 import Authorization from '../utils/Authorization';
+import {setTotalNotif} from '../actions';
 import Api from '../utils/Api';
-import {setTotalNotif, resetTotalNotif} from '../actions';
-import {StackActions} from '@react-navigation/native';
 
 const CHN = STATIC_EVENT_CHANNEL();
 const Drawer = createDrawerNavigator();
 
 export default function MainNavigation() {
   const {userInfo} = useSelector((state) => state.AuthReducer);
-  const [isable, setIsable] = React.useState(true);
   const dispatch = useDispatch();
 
   let navigators;
@@ -39,23 +37,17 @@ export default function MainNavigation() {
     } catch (err) {
       //dispatch(resetTotalNotif());
     }
-
-    setIsable(false);
   };
 
   const onShowNotification = (option) => {
+    fetchNotification();
     PushNotification.localNotification(option);
     PushNotification.cancelLocalNotifications({id: option.id});
-    setIsable(true);
   };
 
   React.useEffect(() => {
     if (!userInfo) {
       navigators.navigation.navigate('SplashScreen');
-    }
-
-    if (isable === true) {
-      fetchNotification();
     }
 
     PushNotification.configure({
@@ -65,7 +57,7 @@ export default function MainNavigation() {
 
       onNotification: function (notification) {
         console.log('NOTIFICATION:', notification);
-        setIsable(true);
+
         navigators.navigation.navigate('NotifStackScreen', {
           screen: 'DetailNotificationScreen',
           params: {
@@ -94,74 +86,96 @@ export default function MainNavigation() {
 
     const socket = io(SOCKET_IO_URL);
 
-    //Complaint
+    /** COMPLAINT EVENT CHANNEL */
     socket.on(
-      `${CHN.complaint.channelName}:${CHN.complaint.eventName}`,
+      `${CHN.complaintEventChannel.channelName}:${CHN.complaintEventChannel.eventName}`,
       (message) => {
-        if (userInfo.user.id == message.receiveData) {
-          const mobileNotif = message.mobileNotif;
+        console.log(
+          `EVENT CHANNEL ${CHN.complaintEventChannel.channelName}`,
+          message,
+        );
 
+        if (userInfo.user.id == message.receiveData) {
           onShowNotification({
-            id: mobileNotif.id,
+            id: message.mobileNotif.id,
             title: 'Info Pengaduan Baru',
-            message: mobileNotif.messages,
+            message: message.mobileNotif.messages,
             date: new Date(Date.now() + 10),
           });
         }
       },
     );
 
-    //Assigned Complaint
+    /** ASSIGNED EVENT CHANNEL */
     socket.on(
-      `${CHN.assignedComplaint.channelName}:${CHN.assignedComplaint.eventName}`,
+      `${CHN.assignedComplaintEventChannel.channelName}:${CHN.assignedComplaintEventChannel.eventName}`,
       (message) => {
+        console.log(
+          `EVENT CHANNEL ${CHN.assignedComplaintEventChannel.channelName}`,
+          message,
+        );
+
         if (userInfo.user.id == message.receiveData) {
-          console.log(`CHANNEL ${CHN.assignedComplaint.channelName}`, message);
-          const mobileNotif = message.mobileNotif;
-
           onShowNotification({
-            id: mobileNotif.id,
+            id: message.mobileNotif.id,
             title: 'Konfirmasi dan Penugasan Pengaduan',
-            message: mobileNotif.messages,
+            message: message.mobileNotif.messages,
             date: new Date(Date.now() + 10),
           });
         }
       },
     );
 
-    //Start Working
+    /** START WORKING EVENT CHANNEL */
     socket.on(
-      `${CHN.assignedWorkingComplaint.channelName}:${CHN.assignedWorkingComplaint.eventName}`,
+      `${CHN.startWorkingComplaintEventChannel.channelName}:${CHN.startWorkingComplaintEventChannel.eventName}`,
       (message) => {
+        console.log(
+          `EVENT CHANNEL ${CHN.startWorkingComplaintEventChannel.channelName}`,
+          message,
+        );
+
         const filters = message.receiveData.filter(
           (item) => item == userInfo.user.id,
         );
 
         if (filters.length > 0 && filters[0] == userInfo.user.id) {
-          const mobileNotif = message.mobileNotif;
           onShowNotification({
-            id: mobileNotif.id,
+            id: message.mobileNotif.id,
             title: 'Pengaduan Diterima dan Dikerjakan',
-            message: mobileNotif.messages,
+            message: message.mobileNotif.messages,
             date: new Date(Date.now() + 10),
           });
         }
       },
     );
 
-    //Read Notification
+    /** START WORKING EVENT CHANNEL */
     socket.on(
-      `${CHN.readNotification.channelName}:${CHN.readNotification.eventName}`,
+      `${CHN.finishedWorkingComplaintEventChannel.channelName}:${CHN.finishedWorkingComplaintEventChannel.eventName}`,
       (message) => {
-        console.log('Read Notification', message);
-        if (userInfo.user.id == message.receiveData) {
-          setIsable(true);
+        console.log(
+          `EVENT CHANNEL ${CHN.finishedWorkingComplaintEventChannel.channelName}`,
+          message,
+        );
+
+        const filters = message.receiveData.filter(
+          (item) => item == userInfo.user.id,
+        );
+
+        if (filters.length > 0 && filters[0] == userInfo.user.id) {
+          onShowNotification({
+            id: message.mobileNotif.id,
+            title: 'Pekerjaan selesai dan sudah dilapor',
+            message: message.mobileNotif.messages,
+            date: new Date(Date.now() + 10),
+          });
         }
       },
     );
 
     return () => {};
-  }, [isable]);
+  }, []);
 
   return (
     <Drawer.Navigator

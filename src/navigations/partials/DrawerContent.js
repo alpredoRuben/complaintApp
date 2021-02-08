@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Colors from '../../utils/Colors';
 import {UserAvatarPNG} from '../../assets';
 import {useSelector, useDispatch} from 'react-redux';
-import {logoutAction} from '../../actions/AuthAction';
+import {logoutAction, resetTotalNotif} from '../../actions';
 import {CommonActions} from '@react-navigation/native';
 
 function DrawerContent(props) {
@@ -16,6 +16,7 @@ function DrawerContent(props) {
   const dispatch = useDispatch();
 
   const signOut = () => {
+    dispatch(resetTotalNotif());
     dispatch(logoutAction());
   };
   return (

@@ -13,13 +13,15 @@ import moment from 'moment';
 import {ToggleHeader} from '../../components';
 import Api from '../../utils/Api';
 import Authorization from '../../utils/Authorization';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
+import {setTotalNotif} from '../../actions';
 
 function DetailNotificationScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
   const [notifId, setNotifId] = useState(props.route.params.id);
   const [notifications, setNotifications] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useDispatch();
 
   const readNotification = async (id) => {
     try {
@@ -38,9 +40,26 @@ function DetailNotificationScreen(props) {
     }
   };
 
+  const fetchNotification = async () => {
+    try {
+      const {data, status} = await Api.get(
+        'mobile_notifications/count/unread',
+        Authorization(userInfo.token),
+      );
+
+      if (status === 200) {
+        const total = data.total;
+        dispatch(setTotalNotif(total));
+      }
+    } catch (err) {
+      //dispatch(resetTotalNotif());
+    }
+  };
+
   useEffect(() => {
     if (userInfo && notifId) {
       readNotification(notifId);
+      fetchNotification();
     }
     setIsLoading(false);
     return () => {};
@@ -74,141 +93,28 @@ function DetailNotificationScreen(props) {
             <Text style={styles.textInfoHeader}>{notifications.messages}</Text>
           </View>
 
-          {notifications.type === 'CREATE_NEW_COMPLAINT' && (
-            <>
-              <View style={styles.dividerHorizonTop(10, 5)}>
-                <Text style={styles.textLabel}>Judul Pengaduan</Text>
-                <Text style={styles.textMessage}>{resData.title}</Text>
-              </View>
+          <View style={styles.dividerHorizonTop(10, 5)}>
+            <Text style={styles.textLabel}>Judul Pengaduan</Text>
+            <Text style={styles.textMessage}>{resData.title}</Text>
+          </View>
 
-              <View style={styles.dividerHorizonTop(10, 5)}>
-                <Text style={styles.textLabel}>Pesan Pengaduan</Text>
-                <Text style={styles.textMessage}>{resData.messages}</Text>
-              </View>
+          <View style={styles.dividerHorizonTop(10, 5)}>
+            <Text style={styles.textLabel}>Pesan Pengaduan</Text>
+            <Text style={styles.textMessage}>{resData.messages}</Text>
+          </View>
 
-              <View style={styles.dividerHorizonTop(10, 15)}>
-                <Text style={styles.textLabel}>Sifat Pengaduan</Text>
-                <View
-                  style={styles.coverDynamic(
-                    resData.is_urgent ? 'red' : 'blue',
-                    '100%',
-                  )}>
-                  <Text style={styles.textWhiteDynamic}>
-                    {resData.is_urgent ? 'Penting' : 'Normal'}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.dividerHorizonTop(10, 15)}>
-                <Text style={styles.textLabel}>Waktu Pengiriman Pesan</Text>
-                <Text style={styles.textMessage}>
-                  {moment(resData.created_at).format('DD MMM YYYY, HH:mm:ss')}
-                </Text>
-              </View>
-
-              <View style={styles.dividerHorizonTop(10, 15)}>
-                <Text style={styles.textLabel}>
-                  Waktu Menerima dan Membaca Pesan
-                </Text>
-                <Text style={styles.textMessage}>
-                  {moment(notifications.read_at).format(
-                    'DD MMM YYYY, HH:mm:ss',
-                  )}
-                </Text>
-              </View>
-
-              <View style={styles.dividerHorizonVertical(10, 15)}>
-                <Text style={styles.textLabel}>Status Pengaduan</Text>
-                <View style={styles.coverDynamic('#c7bd00', 200)}>
-                  <Text style={styles.textWhiteDynamic}>
-                    Menunggu Ditugaskan (Assigned)
-                  </Text>
-                </View>
-              </View>
-            </>
-          )}
-
-          {notifications.type === 'COMPLAINT_ASSIGNED' && (
-            <>
-              <View style={styles.dividerHorizonTop(10, 5)}>
-                <Text style={styles.textLabel}>Judul Pengaduan</Text>
-                <Text style={styles.textMessage}>{resData.title}</Text>
-              </View>
-
-              <View style={styles.dividerHorizonTop(10, 5)}>
-                <Text style={styles.textLabel}>Pesan Pengaduan</Text>
-                <Text style={styles.textMessage}>{resData.messages}</Text>
-              </View>
-
-              <View style={styles.dividerHorizonTop(10, 15)}>
-                <Text style={styles.textLabel}>Sifat Pengaduan</Text>
-                <View
-                  style={styles.coverDynamic(
-                    resData.is_urgent ? 'red' : 'blue',
-                    '100%',
-                  )}>
-                  <Text style={styles.textWhiteDynamic}>
-                    {resData.is_urgent ? 'Penting' : 'Normal'}
-                  </Text>
-                </View>
-              </View>
-
-              {userInfo.user.roles[0].slug === 'admin' && (
-                <View style={styles.dividerHorizonTop(10, 5)}>
-                  <Text style={styles.textLabel}>Pengirim Pesan</Text>
-                  <Text style={styles.textMessage}>{resData.sender.name}</Text>
-                </View>
-              )}
-              {/* <View style={styles.dividerHorizonTop(10, 15)}>
-                <Text style={styles.textLabel}>Track Status</Text>
-                <View style={styles.coverDynamic('#515e5d', '100%')}>
-                  <Text style={styles.textWhiteDynamic}>
-                    {notifications.assigned.status.name}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.dividerHorizonTop(10, 15)}>
-                <Text style={styles.textLabel}>
-                  Status Konfirmasi Pengaduan
-                </Text>
-                <View
-                  style={styles.coverDynamic(
-                    notifications.assigned.complaint.on_assigned
-                      ? '#0274a8'
-                      : '#d68802',
-                    '100%',
-                  )}>
-                  <Text style={styles.textWhiteDynamic}>
-                    {notifications.assigned.complaint.on_assigned
-                      ? 'Telah Ditugaskan'
-                      : 'Menunggu Konfirmasi'}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.dividerHorizonTop(10, 15)}>
-                <Text style={styles.textLabel}>
-                  Pengaduan Di Konfirmasi Pada Waktu
-                </Text>
-                <Text style={styles.textMessage}>
-                  {moment(notifications.assigned.created_at).format(
-                    'DD MM YYYY, HH:mm:ss',
-                  )}
-                </Text>
-              </View>
-
-              <View style={styles.dividerHorizonTop(10, 15)}>
-                <Text style={styles.textLabel}>
-                  Waktu Menerima dan Membaca Pesan
-                </Text>
-                <Text style={styles.textMessage}>
-                  {moment(notifications.read_at).format('DD MM YYYY, HH:mm:ss')}
-                </Text>
-              </View>
-             */}
-            </>
-          )}
+          <View style={styles.dividerHorizonTop(10, 15)}>
+            <Text style={styles.textLabel}>Sifat Pengaduan</Text>
+            <View
+              style={styles.coverDynamic(
+                resData.is_urgent ? 'red' : 'blue',
+                '100%',
+              )}>
+              <Text style={styles.textWhiteDynamic}>
+                {resData.is_urgent ? 'Penting' : 'Normal'}
+              </Text>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

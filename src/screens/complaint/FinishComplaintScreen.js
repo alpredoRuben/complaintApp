@@ -191,7 +191,7 @@ export default function FinishComplaintScreen(props) {
           </Text>
         </View>
 
-        {/* STATUS PENGADUAN */}
+        {/* SIFAT PENGADUAN */}
         <View
           style={{
             paddingVertical: 5,
@@ -204,7 +204,7 @@ export default function FinishComplaintScreen(props) {
               fontWeight: 'bold',
               width: '40%',
             }}>
-            Status Pengaduan
+            Sifat Pengaduan
           </Text>
           <Text
             style={{

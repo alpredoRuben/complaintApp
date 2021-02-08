@@ -12,20 +12,24 @@ export const SOCKET_IO_URL = 'http://' + SOCKET_HOST + ':' + SOCKET_PORT;
 // export const SOCKET_IO_URL = 'http://192.168.1.15:8005'; //Socket Bobo
 
 export const STATIC_EVENT_CHANNEL = () => ({
-  complaint: {
+  complaintEventChannel: {
     channelName: 'complaint-channel',
-    eventName: 'App\\Events\\ComplaintsEvent',
+    eventName: 'ComplaintEvent',
   },
-  assignedComplaint: {
-    channelName: 'assign-complaint',
-    eventName: 'App\\Events\\AssignedComplaintEvent',
+  assignedComplaintEventChannel: {
+    channelName: 'assign-complaint-channel',
+    eventName: 'AssignedComplaintEvent',
   },
-  assignedWorkingComplaint: {
-    channelName: 'assign-working-complaint',
-    eventName: 'App\\Events\\AssignedWorkingComplaintEvent',
+  startWorkingComplaintEventChannel: {
+    channelName: 'start-work-complaint-channel',
+    eventName: 'StartWorkComplaintEvent',
   },
-  readNotification: {
-    channelName: 'read-notification-channel',
-    eventName: 'App\\Events\\ReadNotificationEvent',
+  finishedWorkingComplaintEventChannel: {
+    channelName: 'finished-work-complaint-channel',
+    eventName: 'FinishWorkComplaintEvent',
+  },
+  notificationEventChannel: {
+    channelName: 'notification-channel',
+    eventName: 'NotificationEvent',
   },
 });

@@ -5,12 +5,12 @@ import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   ScrollView,
   ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 import moment from 'moment';
 import {useSelector} from 'react-redux';
@@ -22,7 +22,7 @@ export default function DetailComplaintScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [ready, setReady] = useState(false);
+  const [isConfirm, setIsConfirm] = useState(false);
 
   const fetchComplaint = async () => {
     try {
@@ -34,27 +34,18 @@ export default function DetailComplaintScreen(props) {
       if (status === 200) {
         console.log(data);
         setComplaint(data.result);
-
-        if (data.result.assigned === null) {
-          setReady(false);
-        } else {
-          if (data.result.assigned.is_accepted == false) {
-            setReady(false);
-          } else {
-            setReady(true);
-          }
-        }
       }
     } catch (err) {
       console.log(err.response);
     }
+    setIsConfirm(false);
   };
 
   useEffect(() => {
     fetchComplaint();
     setLoading(false);
     return () => {};
-  }, [ready]);
+  }, [isConfirm]);
 
   if (loading) {
     return (
@@ -92,10 +83,8 @@ export default function DetailComplaintScreen(props) {
   const confirmComplaintHandler = () => {
     console.log('Complaint', complaint);
     startWorkComplaint();
-    setReady(true);
+    setIsConfirm(true);
   };
-
-  const assignedComplaint = () => {};
 
   const submitFinishedWork = () => {
     console.log('Complaint', complaint);
@@ -116,7 +105,7 @@ export default function DetailComplaintScreen(props) {
         complaint.assigned.is_accepted == false
       ) {
         return (
-          <View style={styles.dividerHorizonTop(10, 15)}>
+          <View style={styles.dividerHorizonTop(0, 15)}>
             <TouchableOpacity
               style={{
                 backgroundColor: '#068a9e',
@@ -141,7 +130,7 @@ export default function DetailComplaintScreen(props) {
         complaint.assigned.is_accepted == true
       ) {
         return (
-          <View style={styles.dividerHorizonTop(10, 15)}>
+          <View style={styles.dividerHorizonTop(0, 15)}>
             <TouchableOpacity
               style={{
                 backgroundColor: '#128c37',
@@ -168,173 +157,204 @@ export default function DetailComplaintScreen(props) {
   }
 
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <View style={styles.cover}>
-          <View style={styles.header}>
-            <Text style={styles.textHeader}>Judul Pengaduan</Text>
-            <Text style={styles.textInfoHeader}>{complaint.title}</Text>
-          </View>
+    <View style={{flex: 1, padding: 10, flexDirection: 'column'}}>
+      <ScrollView
+        style={{flex: 1, padding: 2}}
+        showsVerticalScrollIndicator={false}>
+        {/* JUDUL */}
+        <View
+          style={{
+            alignItems: 'center',
+            marginTop: 5,
+            marginBottom: 15,
+          }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              textAlign: 'left',
+              textDecorationLine: 'underline',
+              color: '#0e868a',
+            }}>
+            Judul
+          </Text>
+          <Text
+            style={{
+              fontSize: 13,
+              textAlign: 'center',
+              color: '#2e3945',
+            }}>
+            {complaint.title}
+          </Text>
+        </View>
 
-          <View style={styles.dividerHorizonTop(10, 15)}>
-            <Text style={styles.textLabel}>Pesan Pengaduan</Text>
-            <Text style={styles.textMessage}>{complaint.messages}</Text>
-          </View>
+        {/* PESAN */}
+        <View style={styles.coverRows}>
+          <Text style={styles.textSubtitle}>Pesan Pengaduan</Text>
+          <Text style={styles.textInfoSubtitle}>{complaint.messages}</Text>
+        </View>
 
-          <View style={styles.dividerHorizonTop(10, 15)}>
-            <Text style={styles.textLabel}>Waktu Pengiriman Pesan</Text>
-            <Text style={styles.textMessage}>
-              {moment(complaint.created_at).format('DD MMM YYYY, HH:mm:ss')}
+        {/* STATUS PENGADUAN */}
+        <View style={styles.coverRows}>
+          <Text style={styles.textSubtitle}>Sifat Pengaduan</Text>
+          <Text style={styles.textInfoSubtitle}>
+            {complaint.is_urgent ? 'Perihal Penting' : 'Perihal Biasa'}
+          </Text>
+        </View>
+
+        {/* WAKTU PENGIRIMAN PESAN */}
+        <View style={styles.coverRows}>
+          <Text style={styles.textSubtitle}>Waktu Pengiriman</Text>
+          <Text style={styles.textInfoSubtitle}>
+            {moment(complaint.created_at).format('DD MMM YYYY, HH:mm:ss')}
+          </Text>
+        </View>
+
+        {/* PENGIRIM PESAN PENGADUAN */}
+        {userInfo.user.roles[0].slug === 'admin' && (
+          <View style={styles.coverRows}>
+            <Text style={styles.textSubtitle}>Pengirim Pesan Pengaduan</Text>
+            <Text style={styles.textInfoSubtitle}>{complaint.sender.name}</Text>
+          </View>
+        )}
+
+        {/* PELAKSANA PEKERJAAN PENGADUAN */}
+        {complaint.executor && complaint.executor != null && (
+          <View style={styles.coverRows}>
+            <Text style={styles.textSubtitle}>Pelaksana Pekerjaan</Text>
+            <Text style={[styles.textInfoSubtitle, {fontWeight: 'bold'}]}>
+              {complaint.executor.name + ' (' + complaint.types.name + ')'}
             </Text>
           </View>
+        )}
 
-          {complaint.assigned !== null &&
-            complaint.assigned.start_work !== null && (
-              <View style={styles.dividerHorizonTop(10, 15)}>
-                <Text style={styles.textLabel}>Waktu Memulai Pekerjaan</Text>
-                <Text style={styles.textMessage}>
-                  {moment(complaint.assigned.start_work).format(
-                    'DD MMM YYYY, HH:mm:ss',
-                  )}
-                </Text>
-              </View>
-            )}
-
-          {complaint.assigned !== null && complaint.assigned.end_work !== null && (
-            <View style={styles.dividerHorizonTop(10, 15)}>
-              <Text style={styles.textLabel}>
-                Waktu Menyelesaikan Pekerjaan
-              </Text>
-              <Text style={styles.textMessage}>
-                {moment(complaint.end_work).format('DD MMM YYYY, HH:mm:ss')}
-              </Text>
-            </View>
-          )}
-
-          {userInfo.user.roles[0].slug === 'admin' && (
-            <View style={styles.dividerHorizonTop(10, 15)}>
-              <Text style={styles.textLabel}>Pengirim Pesan Pengaduan</Text>
-              <Text style={styles.textMessage}>{complaint.sender.name}</Text>
-            </View>
-          )}
-
-          {complaint.executor && complaint.executor != null && (
-            <View style={styles.dividerHorizonTop(10, 15)}>
-              <Text style={styles.textLabel}>Pelaksana Pengaduan</Text>
-              <Text style={[styles.textMessage, {fontWeight: 'bold'}]}>
-                {complaint.executor.name + ' (' + complaint.types.name + ')'}
-              </Text>
-            </View>
-          )}
-
-          <View style={styles.dividerHorizonTop(10, 15)}>
-            <Text style={styles.textLabel}>Sifat Pengaduan</Text>
-            <View
-              style={styles.coverDynamic(
-                complaint.is_urgent ? '#0fa811' : '#777',
-                '100%',
-              )}>
-              <Text style={styles.textWhiteDynamic}>
-                {complaint.is_urgent ? 'Berita Penting' : 'Berita Biasa'}
-              </Text>
-            </View>
+        {/* STATUS PENUGASAN */}
+        {userInfo.user.roles[0].slug !== 'pegawai' && (
+          <View style={styles.coverRows}>
+            <Text style={styles.textSubtitle}>Penugasan Pekerjaan</Text>
+            <Text style={styles.textInfoSubtitle}>
+              {complaint.is_assigned
+                ? 'Telah Ditugaskan'
+                : 'Menunggu Ditugaskan'}
+            </Text>
           </View>
+        )}
 
-          <View style={styles.dividerHorizonTop(10, 15)}>
-            <Text style={styles.textLabel}>Status Pekerjaan</Text>
-            <View
-              style={styles.coverDynamic(
-                complaint.is_finished ? '#038c05' : '#b9cc0a',
-                '100%',
-              )}>
-              <Text style={styles.textWhiteDynamic}>
-                {complaint.is_finished ? 'Selesai' : 'Belum Selesai'}
+        {/* STATUS KONFIRMASI PENUGASAN */}
+        {userInfo.user.roles[0].slug !== 'pegawai' &&
+          complaint.assigned !== null && (
+            <View style={styles.coverRows}>
+              <Text style={styles.textSubtitle}>Konfirmasi Penugasan</Text>
+              <Text style={styles.textInfoSubtitle}>
+                {complaint.assigned.is_accepted
+                  ? 'Telah Dikonfirmasi'
+                  : 'Menunggu Konfirmasi'}
               </Text>
             </View>
+          )}
+
+        {/* STATUS PEKERJAAN */}
+        <View style={styles.coverRows}>
+          <Text style={styles.textSubtitle}>Status Pekerjaan</Text>
+          <Text
+            style={[
+              styles.textInfoSubtitle,
+              {
+                color: complaint.is_finished ? 'green' : 'white',
+                fontWeight: 'bold',
+              },
+            ]}>
+            {complaint.is_finished ? 'Selesai' : 'Belum Selesai'}
+          </Text>
+        </View>
+
+        {/* WAKTU MEMULAI PEKERJAAN */}
+        {complaint.assigned !== null && complaint.assigned.start_work !== null && (
+          <View style={styles.coverRows}>
+            <Text style={styles.textSubtitle}>Waktu Memulai Pekerjaan</Text>
+            <Text style={styles.textInfoSubtitle}>
+              {moment(complaint.assigned.start_work).format(
+                'DD MMM YYYY, HH:mm:ss',
+              )}
+            </Text>
           </View>
+        )}
 
-          {userInfo.user.roles[0].slug !== 'pegawai' && (
-            <View style={styles.dividerHorizonTop(10, 15)}>
-              <Text style={styles.textLabel}>Status Penugasan</Text>
-              <View
-                style={styles.coverDynamic(
-                  complaint.is_assigned ? '#0253ab' : '#7b428a',
-                  '100%',
-                )}>
-                <Text style={styles.textWhiteDynamic}>
-                  {complaint.is_assigned
-                    ? 'Telah Ditugaskan'
-                    : 'Menunggu Ditugaskan'}
-                </Text>
-              </View>
-            </View>
-          )}
+        {/* WAKTU MENYELESAIKAN PEKERJAAN */}
+        {complaint.assigned !== null && complaint.assigned.end_work !== null && (
+          <View style={styles.coverRows}>
+            <Text style={styles.textSubtitle}>
+              Waktu Menyelesaikan Pekerjaan
+            </Text>
+            <Text style={styles.textInfoSubtitle}>
+              {moment(complaint.end_work).format('DD MMM YYYY, HH:mm:ss')}
+            </Text>
+          </View>
+        )}
 
-          {userInfo.user.roles[0].slug !== 'pegawai' &&
-            complaint.assigned !== null && (
-              <View style={styles.dividerHorizonTop(10, 15)}>
-                <Text style={styles.textLabel}>
-                  Status Konfirmasi Penugasan
-                </Text>
-                <View
-                  style={styles.coverDynamic(
-                    complaint.assigned.is_accepted ? '#800675' : '#c97602',
-                    '100%',
-                  )}>
-                  <Text style={styles.textWhiteDynamic}>
-                    {complaint.assigned.is_accepted
-                      ? 'Telah Dikonfirmasi'
-                      : 'Menunggu Konfirmasi'}
-                  </Text>
-                </View>
-              </View>
-            )}
-
-          {/* ASSIGNED */}
-          {userInfo.user.roles[0].slug === 'admin' && (
-            <View style={styles.dividerHorizonTop(10, 15)}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#b34c07',
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onPress={assignedComplaint}>
-                <View style={{margin: 10}}>
-                  <Text style={{fontSize: 16, color: 'white'}}>
-                    Penugasan Pengaduan
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {/* BUTTON TO USER OPERATIONAL */}
-          {renderButton()}
-
-          {userInfo.user.roles[0].slug !== 'admin' &&
-            userInfo.user.roles[0].slug !== 'pegawai' &&
-            complaint.is_finished === false &&
-            complaint.is}
-
-          <View style={styles.dividerHorizonVertical(10, 15)}>
-            <TouchableOpacity
+        {/* LAPORAN KETERANGAN PEKERJAAN SELESAI */}
+        {complaint.is_finished == true && (
+          <>
+            <View
               style={{
-                backgroundColor: '#637876',
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              onPress={() => props.navigation.replace('ComplaintScreen')}>
-              <View style={{margin: 10}}>
-                <Text style={{fontSize: 16, color: 'white'}}>Kembali</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+                marginTop: 15,
+                color: 'green',
+                fontSize: 14,
+                fontWeight: 'bold',
+              }}>
+              <Text style={{fontSize: 14, color: 'green'}}>
+                Laporan Hasil Pekerjaan
+              </Text>
+            </View>
+
+            <View style={styles.coverRows}>
+              <Text style={styles.textSubtitle}>Keterangan</Text>
+              <Text style={styles.textInfoSubtitle}>
+                {complaint.assigned.description != ''
+                  ? complaint.assigned.description
+                  : 'Tidak ada keterangan tertulis'}
+              </Text>
+            </View>
+
+            <View style={styles.coverImage}>
+              {complaint.assigned.filepath != null ? (
+                <Image
+                  source={{uri: complaint.assigned.filepath}}
+                  style={{
+                    width: '100%',
+                    height: 300,
+                    margin: 0,
+                    backgroundColor: '#f7f7f7',
+                  }}
+                />
+              ) : (
+                <Text style={{fontSize: 18, textAlign: 'center', color: 'red'}}>
+                  No Image Found
+                </Text>
+              )}
+            </View>
+          </>
+        )}
+
+        {/* BUTTON */}
+        {renderButton()}
+
+        <View style={styles.dividerHorizonVertical(0, 15)}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#637876',
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => props.navigation.replace('ComplaintScreen')}>
+            <View style={{margin: 10}}>
+              <Text style={{fontSize: 16, color: 'white'}}>Kembali</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -357,6 +377,57 @@ export const optionDetailComplaint = (props) => {
 
 const styles = StyleSheet.create({
   dynamicBackground: (color) => ({backgroundColor: color}),
+  // NEW STYLES
+  textSubtitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    width: '40%',
+    color: '#0e868a',
+  },
+
+  textInfoSubtitle: {
+    fontSize: 12,
+    color: '#2e3945',
+    textAlign: 'justify',
+    width: '60%',
+  },
+
+  coverRows: {
+    marginTop: 15,
+    padding: 5,
+    borderRadius: 5,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+
+    elevation: 2,
+  },
+
+  coverImage: {
+    marginTop: 15,
+    padding: 5,
+    borderRadius: 5,
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+
+    elevation: 2,
+  },
+
+  // OLD STYLE
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
