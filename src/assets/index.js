@@ -4,6 +4,7 @@ const NotificationPNG = require('./png/notif.png');
 const ComplaintPNG = require('./png/complaint.png');
 const UserAvatarPNG = require('./png/user.png');
 const LoginSVG = require('./svg/login.svg');
+const GKNImage = require('./jpg/gkn.jpg');
 
 export {
   LoginPNG,
@@ -12,4 +13,5 @@ export {
   UserAvatarPNG,
   LoginSVG,
   NotificationPNG,
+  GKNImage,
 };

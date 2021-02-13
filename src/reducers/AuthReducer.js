@@ -1,4 +1,9 @@
-import {LOGIN_FAILED, LOGIN_SUCCESS, LOGOUT} from '../utils/Constanta';
+import {
+  LOGIN_FAILED,
+  LOGIN_SUCCESS,
+  LOGOUT,
+  SET_USER,
+} from '../utils/Constanta';
 
 const initialStateLogin = {
   errors: null,
@@ -13,6 +18,8 @@ const AuthReducer = (state = initialStateLogin, action) => {
       return {...state, userInfo: null, errors: action.payload};
     case LOGOUT:
       return initialStateLogin;
+    case SET_USER:
+      return {...state, userInfo: action.payload};
     default:
       return state;
   }

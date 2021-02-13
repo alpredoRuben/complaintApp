@@ -19,7 +19,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 
 import Colors from '../../utils/Colors';
-import {LoginPNG} from '../../assets';
+import {LoginPNG, GKNImage} from '../../assets';
 import {Input} from '../../components';
 import Api from '../../utils/Api';
 import {useSelector, useDispatch} from 'react-redux';
@@ -92,7 +92,7 @@ function LoginScreen(props) {
       <ScrollView showsVerticalScrollIndicator={false} style={styles.flexOne}>
         <View style={styles.setMargin(10)}>
           <View style={styles.coverImage}>
-            <Image source={LoginPNG} style={styles.image} />
+            <Image source={GKNImage} style={styles.image} />
           </View>
 
           <View style={styles.flexOne}>
@@ -170,9 +170,9 @@ function LoginScreen(props) {
                 </Animatable.View>
               )}
 
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
               <Text style={styles.forgotPassword}>Lupa Sandi (Password) ?</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <View style={styles.formGroup}>
               <TouchableOpacity
@@ -227,7 +227,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'red',
   },
 
   image: {height: 250, width: '100%'},

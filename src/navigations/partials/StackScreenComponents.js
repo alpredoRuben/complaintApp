@@ -5,6 +5,8 @@ import Colors from '../../utils/Colors';
 import {
   DashboardScreen,
   ProfileScreen,
+  EditProfileScreen,
+  optionEditProfile,
   NotifScreen,
   InfoScreen,
   ComplaintScreen,
@@ -23,6 +25,8 @@ import {
   optionSetting,
   FinishComplaintScreen,
   optionFinishComplaint,
+  EditPasswordScreen,
+  optionEditPassword,
 } from '../../screens';
 
 const navigatorScreenOption = () => ({
@@ -57,11 +61,23 @@ export function DashboardStackScreen() {
 /** Profile Stack Screen */
 export const ProfileStackScreen = () => {
   return (
-    <ProfileStack.Navigator screenOptions={navigatorScreenOption}>
+    <ProfileStack.Navigator
+      initialRouteName="ProfileScreen"
+      screenOptions={navigatorScreenOption}>
       <ProfileStack.Screen
         name="ProfileScreen"
         component={ProfileScreen}
         options={optionProfile}
+      />
+      <ProfileStack.Screen
+        name="EditProfileScreen"
+        component={EditProfileScreen}
+        options={optionEditProfile}
+      />
+      <ProfileStack.Screen
+        name="EditPasswordScreen"
+        component={EditPasswordScreen}
+        options={optionEditPassword}
       />
     </ProfileStack.Navigator>
   );

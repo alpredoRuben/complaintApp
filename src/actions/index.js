@@ -2,6 +2,7 @@ import {
   successLoginAction,
   failedLoginAction,
   logoutAction,
+  setUserAction,
 } from './AuthAction';
 
 import {setTotalNotif, resetTotalNotif} from './NotificationAction';
@@ -12,4 +13,5 @@ export {
   logoutAction,
   setTotalNotif,
   resetTotalNotif,
+  setUserAction,
 };

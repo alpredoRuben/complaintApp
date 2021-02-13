@@ -25,9 +25,18 @@ function DrawerContent(props) {
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
             <View style={styles.avatarCover}>
-              <Avatar.Image source={UserAvatarPNG} size={50} />
+              {userInfo.user.profile != null &&
+              userInfo.user.profile.thumbnail != null ? (
+                <Avatar.Image
+                  source={{uri: userInfo.user.profile.thumbnail}}
+                  size={60}
+                />
+              ) : (
+                <Avatar.Image source={UserAvatarPNG} size={60} />
+              )}
+
               <View style={styles.avatarTitle}>
-                <Title style={styles.title}>
+                <Title style={styles.title(userInfo.user.name.length)}>
                   {userInfo ? userInfo.user.name : 'No Name'}
                 </Title>
                 <Caption style={styles.caption}>
@@ -143,15 +152,15 @@ const styles = StyleSheet.create({
   userInfoSection: {
     paddingLeft: 20,
   },
-  title: {
-    fontSize: 16,
+  title: (len) => ({
+    fontSize: len <= 12 ? 14 : 12,
     marginTop: 3,
     fontWeight: 'bold',
-  },
-  caption: {
-    fontSize: 14,
-    lineHeight: 14,
-  },
+  }),
+  caption: (len) => ({
+    fontSize: len <= 12 ? 14 : 12,
+    lineHeight: 10,
+  }),
   row: {
     marginTop: 20,
     flexDirection: 'row',

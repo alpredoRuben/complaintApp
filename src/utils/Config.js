@@ -1,3 +1,9 @@
+// const API_HOST = '125.213.155.94';
+// const API_PORT = '4433';
+
+// const SOCKET_HOST = '125.213.155.94';
+// const SOCKET_PORT = '8888';
+
 const API_HOST = '192.168.43.168';
 const API_PORT = '8000';
 

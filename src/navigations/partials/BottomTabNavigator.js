@@ -24,12 +24,7 @@ function BottomTabNavigator() {
         options={tabOptions('Dashboard', 'ios-home')}
       />
       <BottomTab.Screen
-        name="InfoScreen"
-        component={InfoStackScreen}
-        options={tabOptions('Informasi', 'ios-information-circle')}
-      />
-      <BottomTab.Screen
-        name="ProfileScreen"
+        name="ProfileStackScreen"
         component={ProfileStackScreen}
         options={tabOptions('Profile', 'ios-person')}
       />

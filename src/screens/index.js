@@ -5,6 +5,7 @@ import DashboardScreen, {optionDashboard} from './dashboard/DashboardScreen';
 import InfoScreen, {optionInfo} from './info/InfoScreen';
 import NotifScreen, {optionNotif} from './notif/NotifScreen';
 import ProfileScreen, {optionProfile} from './user/ProfileScreen';
+import EditProfileScreen, {optionEditProfile} from './user/EditProfileScreen';
 
 import ComplaintScreen, {optionComplaint} from './complaint/ComplaintScreen';
 import AddComplaintScreen, {
@@ -24,6 +25,11 @@ import SettingScreen, {optionSetting} from './setting/SettingScreen';
 import FinishComplaintScreen, {
   optionFinishComplaint,
 } from './complaint/FinishComplaintScreen';
+
+import EditPasswordScreen, {
+  optionEditPassword,
+} from './user/EditPasswordScreen';
+
 export {
   LoginScreen,
   SplashScreen,
@@ -39,22 +45,28 @@ export {
   //User
   ProfileScreen,
   optionProfile,
+  //Edit User Profile
+  EditProfileScreen,
+  optionEditProfile,
   //Complaints
   ComplaintScreen,
   optionComplaint,
-  //AddComplaint
+  //Add Complaint
   AddComplaintScreen,
   optionAddComplaint,
-  //FinishComplaint
+  //Finish Complaint
   FinishComplaintScreen,
   optionFinishComplaint,
-  //DetailNotification
+  //Detail Notification
   DetailNotificationScreen,
   optionDetailNotification,
-  //DetailComplaintScreen
+  //Detail Complaint Screen
   DetailComplaintScreen,
   optionDetailComplaint,
-  //SettingScreen
+  //Setting Screen
   SettingScreen,
   optionSetting,
+  //Edit Password
+  EditPasswordScreen,
+  optionEditPassword,
 };
