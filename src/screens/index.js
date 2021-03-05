@@ -30,6 +30,8 @@ import EditPasswordScreen, {
   optionEditPassword,
 } from './user/EditPasswordScreen';
 
+import ProductScreen, {optionProductScreen} from './inventory/ProductScreen';
+
 export {
   LoginScreen,
   SplashScreen,
@@ -69,4 +71,7 @@ export {
   //Edit Password
   EditPasswordScreen,
   optionEditPassword,
+  //InventoryProduct
+  ProductScreen,
+  optionProductScreen,
 };

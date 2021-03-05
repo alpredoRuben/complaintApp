@@ -96,6 +96,15 @@ export default function DetailComplaintScreen(props) {
     });
   };
 
+  const submitOrderProduct = () => {
+    props.navigation.navigate('InventoryStackScreen', {
+      screen: 'ProductScreen',
+      params: {
+        complaintId: complaint.id,
+      },
+    });
+  };
+
   const renderButton = () => {
     const slug = userInfo.user.roles[0].slug;
     if (slug !== 'admin' && slug !== 'pegawai') {
@@ -112,6 +121,7 @@ export default function DetailComplaintScreen(props) {
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
+                borderRadius: 5,
               }}
               onPress={confirmComplaintHandler}>
               <View style={{margin: 10}}>
@@ -130,22 +140,43 @@ export default function DetailComplaintScreen(props) {
         complaint.assigned.is_accepted == true
       ) {
         return (
-          <View style={styles.dividerHorizonTop(0, 15)}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: '#128c37',
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              onPress={submitFinishedWork}>
-              <View style={{margin: 10}}>
-                <Text style={{fontSize: 16, color: 'white'}}>
-                  Pekerjaan Selesai
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+          <>
+            <View style={styles.dividerHorizonTop(0, 15)}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#811991',
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 5,
+                }}
+                onPress={submitOrderProduct}>
+                <View style={{margin: 10}}>
+                  <Text style={{fontSize: 16, color: 'white'}}>
+                    Pesan & Ambil Barang
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.dividerHorizonTop(0, 15)}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#128c37',
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 5,
+                }}
+                onPress={submitFinishedWork}>
+                <View style={{margin: 10}}>
+                  <Text style={{fontSize: 16, color: 'white'}}>
+                    Lapor Pekerjaan Selesai
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </>
         );
       }
     }
@@ -321,8 +352,8 @@ export default function DetailComplaintScreen(props) {
                 <Image
                   source={{uri: complaint.assigned.filepath}}
                   style={{
-                    width: '100%',
-                    height: 300,
+                    width: '50%',
+                    height: '50%',
                     margin: 0,
                     backgroundColor: '#f7f7f7',
                   }}
@@ -346,6 +377,7 @@ export default function DetailComplaintScreen(props) {
               flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
+              borderRadius: 5,
             }}
             onPress={() => props.navigation.replace('ComplaintScreen')}>
             <View style={{margin: 10}}>

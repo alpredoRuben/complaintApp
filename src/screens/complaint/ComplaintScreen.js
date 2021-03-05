@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import {Button, Searchbar, FAB} from 'react-native-paper';
 import {ScrollView} from 'react-native-gesture-handler';
 import moment from 'moment';
@@ -53,6 +54,13 @@ function ComplaintScreen(props) {
   });
 
   const [subtitle, setSubtitle] = useState(elements[0].title);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('Now u call use focus effect');
+      fetchComplaints();
+    }, [dataSource.page, searchQuery, selectedIndex, subtitle]),
+  );
 
   const fetchComplaints = async () => {
     try {

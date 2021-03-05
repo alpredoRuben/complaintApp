@@ -27,6 +27,8 @@ import {
   optionFinishComplaint,
   EditPasswordScreen,
   optionEditPassword,
+  ProductScreen,
+  optionProductScreen,
 } from '../../screens';
 
 const navigatorScreenOption = () => ({
@@ -44,6 +46,7 @@ const ProfileStack = createStackNavigator();
 const ComplaintStack = createStackNavigator();
 const SettingStack = createStackNavigator();
 const NotifStack = createStackNavigator();
+const InventoryStack = createStackNavigator();
 
 /** Dashboard Stack Screen */
 export function DashboardStackScreen() {
@@ -157,5 +160,19 @@ export const NotifStackScreen = () => {
         options={optionDetailNotification}
       />
     </NotifStack.Navigator>
+  );
+};
+
+export const InventoryStackScreen = () => {
+  return (
+    <InventoryStack.Navigator
+      initialRouteName="ProductScreen"
+      screenOptions={navigatorScreenOption}>
+      <InventoryStack.Screen
+        name="ProductScreen"
+        component={ProductScreen}
+        options={optionProductScreen}
+      />
+    </InventoryStack.Navigator>
   );
 };

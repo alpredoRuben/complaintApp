@@ -13,12 +13,11 @@ import {
   Alert,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
-import {Button, ActivityIndicator} from 'react-native-paper';
+import {Button, ActivityIndicator, Colors} from 'react-native-paper';
 import {useSelector, useDispatch} from 'react-redux';
 import {setUserAction} from '../../actions/AuthAction';
 import {ToggleHeader} from '../../components';
 import Api from '../../utils/Api';
-import Colors from '../../utils/Colors';
 
 export default function EditProfileScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);

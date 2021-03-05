@@ -4,6 +4,7 @@ import {
   SettingStackScreen,
   InfoStackScreen,
   NotifStackScreen,
+  InventoryStackScreen,
 } from './partials/StackScreenComponents';
 
 const drawerRoutes = [
@@ -31,6 +32,12 @@ const drawerRoutes = [
     name: 'NotifStackScreen',
     component: NotifStackScreen,
     roles: 'all',
+  },
+  {
+    name: 'InventoryStackScreen',
+    component: InventoryStackScreen,
+    roles: 'all',
+    notUser: 'pegawai',
   },
 ];
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable eqeqeq */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
@@ -183,13 +182,16 @@ export default function MainNavigation() {
         navigators = props;
         return <DrawerContent {...props} />;
       }}>
-      {drawerRoutes.map((item, index) => (
-        <Drawer.Screen
-          key={`DR-${index}`}
-          name={item.name}
-          component={item.component}
-        />
-      ))}
+      {drawerRoutes.map((item, index) => {
+        return item.notUser &&
+          item.notUser == userInfo.user.roles[0].slug.toLowerCase() ? null : (
+          <Drawer.Screen
+            key={`DR-${index}`}
+            name={item.name}
+            component={item.component}
+          />
+        );
+      })}
     </Drawer.Navigator>
   );
 }

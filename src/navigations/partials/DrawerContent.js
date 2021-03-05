@@ -70,33 +70,53 @@ function DrawerContent(props) {
               }
             />
 
+            {/* Menu Inventory */}
+            {userInfo.user.roles[0].slug.toLowerCase() !== 'pegawai' && (
+              <DrawerItem
+                activeTintColor={Colors.PrimaryTransparancy}
+                label={({color}) => <Text style={{color}}>Inventaris</Text>}
+                icon={({color, size}) => (
+                  <Icon name="list-circle-outline" size={size} color={color} />
+                )}
+                onPress={() =>
+                  props.navigation.navigate('InventoryStackScreen', {
+                    screen: 'ProductScreen',
+                  })
+                }
+              />
+            )}
+
             {/* Item Menu Notification */}
             <DrawerItem
               activeTintColor={Colors.PrimaryTransparancy}
-              label={({color}) => (
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    padding: 10,
-                  }}>
-                  <View style={{width: '85%'}}>
-                    <Text style={{color}}>Notifikasi</Text>
-                  </View>
+              label={({color}) =>
+                total > 0 ? (
                   <View
                     style={{
-                      width: '10%',
                       flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: total > 0 ? 'red' : 'white',
-                      paddingHorizontal: 2,
-                      borderRadius: 10,
+                      flexDirection: 'row',
+                      padding: 10,
                     }}>
-                    <Text style={{color: 'white'}}>{total}</Text>
+                    <View style={{width: '85%'}}>
+                      <Text style={{color}}>Notifikasi</Text>
+                    </View>
+                    <View
+                      style={{
+                        width: '10%',
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: total > 0 ? 'red' : 'white',
+                        paddingHorizontal: 2,
+                        borderRadius: 10,
+                      }}>
+                      <Text style={{color: 'white'}}>{total}</Text>
+                    </View>
                   </View>
-                </View>
-              )}
+                ) : (
+                  <Text style={{color}}>Notifikasi</Text>
+                )
+              }
               icon={({color, size}) => (
                 <Icon name="notifications" size={size} color={color} />
               )}
