@@ -3,7 +3,7 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, SafeAreaView, ScrollView, StyleSheet} from 'react-native';
 import {useSelector} from 'react-redux';
-import {ToggleHeader, CardInfo} from '../../components';
+import {CardInfo} from '../../components';
 import Api from '../../utils/Api';
 import Authorization from '../../utils/Authorization';
 
@@ -31,8 +31,6 @@ function DashboardScreen(props) {
     fetchInfo();
     return () => {};
   }, []);
-
-  console.log('info', userInfo);
 
   if (info === null || error !== null) {
     return (
@@ -95,21 +93,6 @@ function DashboardScreen(props) {
     </SafeAreaView>
   );
 }
-
-export const optionDashboard = (props) => ({
-  headerTitle: 'Dashboard',
-  headerLeft: () => {
-    return (
-      <ToggleHeader
-        name="ios-menu"
-        onPress={() => props.navigation.openDrawer()}
-      />
-    );
-  },
-  headerTitleStyle: {
-    alignSelf: 'center',
-  },
-});
 
 const styles = StyleSheet.create({
   cover: {flex: 1, paddingVertical: '1%'},

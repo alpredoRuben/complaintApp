@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import {useTheme, Snackbar} from 'react-native-paper';
+import {useTheme, Snackbar, ActivityIndicator} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
@@ -30,9 +30,11 @@ import {
 } from '../../actions';
 
 function LoginScreen(props) {
-  const {userInfo, errors} = useSelector((state) => state.AuthReducer);
+  const {errors} = useSelector((state) => state.AuthReducer);
   const dispatch = useDispatch();
   const {colors} = useTheme();
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
     username: '',
     password: '',
@@ -48,15 +50,22 @@ function LoginScreen(props) {
     setForm({...form, [key]: value});
   };
 
-  const loginPost = async (user) => {
+  const loginPost = async () => {
     try {
+      console.log(Api.defaults);
       const {data, status} = await Api.post('/login', form);
+      console.log('Login Data', data);
+
+      setLoading(false);
+
       if (status === 200) {
         dispatch(successLoginAction(data));
       }
     } catch (err) {
       console.log('ini error', err.response);
       const {data, status} = err.response;
+
+      setLoading(false);
 
       if (status === 422) {
         dispatch(failedLoginAction({data, status}));
@@ -71,7 +80,8 @@ function LoginScreen(props) {
   };
 
   const submitLoginHandler = () => {
-    loginPost(form);
+    setLoading(true);
+    loginPost();
   };
 
   const onDismissSnackBar = () => {
@@ -82,6 +92,14 @@ function LoginScreen(props) {
     dispatch(logoutAction());
     return () => {};
   }, []);
+
+  if (loading) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator animating={true} color="#1184ab" size="large" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.flexOne}>

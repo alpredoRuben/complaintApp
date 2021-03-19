@@ -12,12 +12,11 @@ import {
   SafeAreaView,
   FlatList,
   Platform,
+  ScrollView,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {ActivityIndicator, RadioButton} from 'react-native-paper';
-import {useFocusEffect} from '@react-navigation/native';
-
-import {ToggleHeader} from '../../components';
+import {ActivityIndicator, RadioButton, Button} from 'react-native-paper';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 //Utils
 import Api from '../../utils/Api';
@@ -47,14 +46,13 @@ export default function ProductScreen(props) {
   const [filter, setFilter] = useState({
     types: 'name',
     search: '',
+    isFilter: false,
   });
 
   const fetchProducts = async () => {
     const url = `/products?page=${dataSource.page}&types=${filter.types}&search=${filter.search}`;
-    console.log('Url', url);
     try {
       const {data, status} = await Api.get(url, Authorization(userInfo.token));
-      console.log('Response Data', data);
 
       if (status === 200) {
         if (dataSource.page === 1) {
@@ -72,6 +70,7 @@ export default function ProductScreen(props) {
             error: null,
           });
         }
+        console.log(`Data Source on Page ${dataSource.page}`, dataSource);
       }
     } catch (error) {
       setDataSource({
@@ -80,34 +79,31 @@ export default function ProductScreen(props) {
       });
     }
     setLoading(false);
+    setFilter({...filter, isFilter: false});
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      console.log('Call use focus effect');
-      setDataSource({...dataSource, page: 1});
-    }, [setDataSource, dataSource.page]),
-  );
-
   useEffect(() => {
-    if (dataSource.page) {
-      console.log('Component Update Mount');
-    }
+    console.log('Props Route', props.route);
+
+    const unsubscribe = props.navigation.addListener('focus', () => {
+      console.log('Running Event Screen Focus');
+      setLoading(true);
+      setFilter({...filter, types: 'name', search: '', isFilter: true});
+      setDataSource({...dataSource, products: [], page: 1, total: 0});
+    });
 
     fetchProducts();
 
-    if (props.route.params !== undefined) {
-      setComplaintId(
-        props.route.params.complaintId !== undefined
-          ? props.route.params.complaintId
-          : null,
-      );
-    } else {
-      setComplaintId(null);
-    }
+    setComplaintId(
+      props.route.params.complaintId !== undefined
+        ? props.route.params.complaintId
+        : null,
+    );
 
-    return () => {};
-  }, [dataSource.page]);
+    return () => {
+      unsubscribe;
+    };
+  }, [props.navigation, dataSource.page, filter.isFilter]);
 
   const loadMoreProduct = () => {
     setLoading(true);
@@ -127,7 +123,11 @@ export default function ProductScreen(props) {
   //Render Item
   const _renderItem = ({item}) => {
     return (
-      <View style={[styles.itemCover, {height: 240, marginBottom: 10}]}>
+      <View
+        style={[
+          styles.itemCover,
+          {height: complaintId == null ? 240 : 260, marginBottom: 10},
+        ]}>
         {item.file_images.length > 0 ? (
           <Image
             source={{uri: item.file_images[0].filepath}}
@@ -148,7 +148,7 @@ export default function ProductScreen(props) {
         <View style={styles.itemCoverInfo}>
           <View style={styles.itemLineInfo}>
             <Text style={styles.itemSmallText}>Stok</Text>
-            <Text style={styles.itemSmallText}>{item.stock_awal}</Text>
+            <Text style={styles.itemSmallText}>{item.stock}</Text>
           </View>
           <View style={styles.itemLineInfo}>
             <Text style={styles.itemSmallText}>Satuan</Text>
@@ -157,7 +157,17 @@ export default function ProductScreen(props) {
         </View>
 
         {complaintId != null && (
-          <TouchableOpacity style={styles.itemButtonOrder}>
+          <TouchableOpacity
+            style={styles.itemButtonOrder}
+            onPress={() => {
+              props.navigation.navigate('InventoryStackScreen', {
+                screen: 'DetailCartScreen',
+                params: {
+                  productId: item.id,
+                  complaintId: props.route.params.complaintId,
+                },
+              });
+            }}>
             <Text style={styles.itemButtonText}>Pesan</Text>
           </TouchableOpacity>
         )}
@@ -210,57 +220,99 @@ export default function ProductScreen(props) {
     }
   };
 
-  // Event Submit Search
-  const onSubmitFilterHandler = () => {
-    setLoading(true);
-    setDataSource({...dataSource, page: 1});
-    refFilterRBSheet.current.close();
-  };
-
   // Event Button Filter Press
   const onFilterShowHandler = () => {
     setFilter({...filter, types: 'name', search: ''});
     refFilterRBSheet.current.open();
   };
 
+  // Event Submit Search
+  const onSubmitFilterHandler = () => {
+    refFilterRBSheet.current.close();
+    setLoading(true);
+    setDataSource({...dataSource, page: 1});
+    setFilter({...filter, isFilter: true});
+  };
+
   // Event Refresh
   const onSubmitRefreshHandler = () => {
     setLoading(true);
-    setFilter({...filter, types: 'name', search: ''});
+    setFilter({...filter, types: 'name', search: '', isFilter: true});
     setDataSource({...dataSource, page: 1});
   };
 
   if (loading === true) {
-    return <ActivityIndicator animating={true} color="#106bb5" />;
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator animating={true} color="#106bb5" />
+      </View>
+    );
   }
 
   return (
     <SafeAreaView style={styles.productSafeArea}>
       <View style={styles.productCover}>
         {/* TOP */}
-        <View style={{height: 50}}>
-          <View style={styles.coverTopMenu}>
-            <TouchableOpacity
-              onPress={onFilterShowHandler}
-              style={styles.buttonMenu}>
-              <Text style={styles.textButtonMenu}>FILTER</Text>
-            </TouchableOpacity>
+        <View style={{height: 45, width: width}}>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 5,
+            }}>
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}>
+              <View style={styles.coverTopMenu}>
+                <Button
+                  icon="filter"
+                  mode="contained"
+                  onPress={onFilterShowHandler}
+                  style={styles.buttonMenu}>
+                  <Text style={styles.textButtonMenu}>FILTER</Text>
+                </Button>
 
-            <TouchableOpacity
-              onPress={onSubmitRefreshHandler}
-              style={styles.buttonMenu}>
-              <Text style={styles.textButtonMenu}>REFRESH</Text>
-            </TouchableOpacity>
+                <Button
+                  icon="refresh"
+                  mode="contained"
+                  onPress={onSubmitRefreshHandler}
+                  style={styles.buttonMenu}>
+                  <Text style={styles.textButtonMenu}>REFRESH</Text>
+                </Button>
+
+                {props.route.params.complaintId !== undefined ? (
+                  <Button
+                    icon={({size, color}) => (
+                      <Icon
+                        name="chevron-back-circle-outline"
+                        size={size + 5}
+                        color={color}
+                      />
+                    )}
+                    mode="contained"
+                    style={styles.buttonMenu}
+                    onPress={() => props.navigation.goBack()}>
+                    <Text style={styles.textButtonMenu}>KEMBALI</Text>
+                  </Button>
+                ) : null}
+              </View>
+            </ScrollView>
           </View>
         </View>
 
         {/* BOTTOM */}
-        <View style={styles.coverListProduct}>
+        <View
+          style={{
+            width: width,
+            height: height - 45,
+            backgroundColor: '#c3dfe3',
+            paddingVertical: 10,
+          }}>
           {!loading && dataSource.products.length > 0 ? (
             <FlatList
               style={{flex: 1, padding: 5}}
               data={dataSource.products}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item, index) => `${index}_${item.id}`}
               renderItem={_renderItem}
               getItemLayout={_getItemLayout}
               numColumns={numColumns}
@@ -268,7 +320,13 @@ export default function ProductScreen(props) {
               ListFooterComponent={_renderFooter}
             />
           ) : (
-            <Text style={{fontSize: 18}}>Empty Data</Text>
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text
+                style={{fontSize: 18, fontWeight: 'bold', color: '#cf7f1b'}}>
+                DATA BARANG KOSONG
+              </Text>
+            </View>
           )}
         </View>
       </View>
@@ -356,23 +414,6 @@ export default function ProductScreen(props) {
     </SafeAreaView>
   );
 }
-
-export const optionProductScreen = (props) => {
-  return {
-    headerTitle: 'Data Inventaris Barang',
-    headerLeft: () => {
-      return (
-        <ToggleHeader
-          name="ios-menu"
-          onPress={() => props.navigation.openDrawer()}
-        />
-      );
-    },
-    headerTitleStyle: {
-      alignSelf: 'center',
-    },
-  };
-};
 
 const styles = StyleSheet.create({
   //Render Item Styles
@@ -470,30 +511,24 @@ const styles = StyleSheet.create({
   },
 
   coverTopMenu: {
-    marginHorizontal: 17,
+    marginHorizontal: 0,
+    width: '100%',
     flexDirection: 'row',
-    paddingTop: 10,
-    justifyContent: 'center',
+    padding: 0,
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
 
   buttonMenu: {
-    borderRadius: 2,
     backgroundColor: '#018f8f',
-    marginHorizontal: 10,
-    width: '40%',
-    padding: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginHorizontal: 5,
   },
 
   textButtonMenu: {
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: 'bold',
     color: 'white',
   },
-
-  coverListProduct: {flex: 1, backgroundColor: '#f2f5f7', paddingVertical: 10},
 
   //RB Sheet Filter
   sheetCover: {

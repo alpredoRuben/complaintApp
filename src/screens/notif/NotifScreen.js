@@ -224,19 +224,4 @@ function NotifScreen(props) {
   );
 }
 
-export const optionNotif = (props) => ({
-  headerTitle: 'List Notifikasi',
-  headerLeft: () => {
-    return (
-      <ToggleHeader
-        name="ios-menu"
-        onPress={() => props.navigation.openDrawer()}
-      />
-    );
-  },
-  headerTitleStyle: {
-    alignSelf: 'center',
-  },
-});
-
 export default NotifScreen;

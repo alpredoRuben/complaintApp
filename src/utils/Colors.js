@@ -13,6 +13,10 @@ const Colors = {
   HeadingText: '#046350',
   Info: '#03a8a0',
   Back: '#0060ba',
+  FaceColorTheme: '#3B5998',
+  FaceColorSlim: '#8b9dc3',
+  FaceColorSmooth: '#dfe3ee',
+  FaceColorTransparent: '#f7f7f7',
 };
 
 export default Colors;

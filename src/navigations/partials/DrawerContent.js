@@ -19,6 +19,11 @@ function DrawerContent(props) {
     dispatch(resetTotalNotif());
     dispatch(logoutAction());
   };
+
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   return (
     <View style={styles.drawerContent}>
       <DrawerContentScrollView>
@@ -40,7 +45,12 @@ function DrawerContent(props) {
                   {userInfo ? userInfo.user.name : 'No Name'}
                 </Title>
                 <Caption style={styles.caption}>
-                  {userInfo ? userInfo.user.roles[0].name : 'No Position'}
+                  {userInfo
+                    ? capitalizeFirstLetter(userInfo.user.roles[0].alias)
+                    : 'No Position'}
+                  {userInfo.user.roles[0].slug !== 'admin' &&
+                    userInfo.user.roles[0].slug !== 'customer' &&
+                    ' - ' + capitalizeFirstLetter(userInfo.user.roles[0].name)}
                 </Caption>
               </View>
             </View>
@@ -81,6 +91,9 @@ function DrawerContent(props) {
                 onPress={() =>
                   props.navigation.navigate('InventoryStackScreen', {
                     screen: 'ProductScreen',
+                    params: {
+                      complaintId: undefined,
+                    },
                   })
                 }
               />

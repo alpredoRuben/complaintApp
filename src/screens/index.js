@@ -1,77 +1,58 @@
 import LoginScreen from './auth/LoginScreen';
 import SplashScreen from './auth/SplashScreen';
 
-import DashboardScreen, {optionDashboard} from './dashboard/DashboardScreen';
-import InfoScreen, {optionInfo} from './info/InfoScreen';
-import NotifScreen, {optionNotif} from './notif/NotifScreen';
-import ProfileScreen, {optionProfile} from './user/ProfileScreen';
-import EditProfileScreen, {optionEditProfile} from './user/EditProfileScreen';
+import DashboardScreen from './dashboard/DashboardScreen';
+import InfoScreen from './info/InfoScreen';
+import NotifScreen from './notif/NotifScreen';
+import ProfileScreen from './user/ProfileScreen';
+import EditProfileScreen from './user/EditProfileScreen';
 
-import ComplaintScreen, {optionComplaint} from './complaint/ComplaintScreen';
-import AddComplaintScreen, {
-  optionAddComplaint,
-} from './complaint/AddComplaintScreen';
+import ComplaintScreen from './complaint/ComplaintScreen';
+import AddComplaintScreen from './complaint/AddComplaintScreen';
 
-import DetailNotificationScreen, {
-  optionDetailNotification,
-} from './notif/DetailNotificationScreen';
+import DetailNotificationScreen from './notif/DetailNotificationScreen';
 
-import DetailComplaintScreen, {
-  optionDetailComplaint,
-} from './complaint/DetailComplaintScreen';
+import DetailComplaintScreen from './complaint/DetailComplaintScreen';
 
-import SettingScreen, {optionSetting} from './setting/SettingScreen';
+import SettingScreen from './setting/SettingScreen';
 
-import FinishComplaintScreen, {
-  optionFinishComplaint,
-} from './complaint/FinishComplaintScreen';
+import FinishComplaintScreen from './complaint/FinishComplaintScreen';
 
-import EditPasswordScreen, {
-  optionEditPassword,
-} from './user/EditPasswordScreen';
+import EditPasswordScreen from './user/EditPasswordScreen';
 
-import ProductScreen, {optionProductScreen} from './inventory/ProductScreen';
+import ProductScreen from './inventory/ProductScreen';
+
+import DetailCartScreen from './inventory/DetailCartScreen';
 
 export {
   LoginScreen,
   SplashScreen,
   //Dashboard
   DashboardScreen,
-  optionDashboard,
   //Information
   InfoScreen,
-  optionInfo,
   //Notification
   NotifScreen,
-  optionNotif,
   //User
   ProfileScreen,
-  optionProfile,
   //Edit User Profile
   EditProfileScreen,
-  optionEditProfile,
   //Complaints
   ComplaintScreen,
-  optionComplaint,
   //Add Complaint
   AddComplaintScreen,
-  optionAddComplaint,
   //Finish Complaint
   FinishComplaintScreen,
-  optionFinishComplaint,
   //Detail Notification
   DetailNotificationScreen,
-  optionDetailNotification,
   //Detail Complaint Screen
   DetailComplaintScreen,
-  optionDetailComplaint,
   //Setting Screen
   SettingScreen,
-  optionSetting,
   //Edit Password
   EditPasswordScreen,
-  optionEditPassword,
   //InventoryProduct
   ProductScreen,
-  optionProductScreen,
+  //Inventory Order
+  DetailCartScreen,
 };

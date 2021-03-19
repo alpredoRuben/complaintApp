@@ -7,6 +7,7 @@ import {useTheme} from '@react-navigation/native';
 import Colors from '../../utils/Colors';
 import {ComplaintPNG} from '../../assets';
 import styles from './styles';
+import {APP_NAME} from '../../utils/Config';
 
 function SplashScreen(props) {
   const {colors} = useTheme();
@@ -50,16 +51,16 @@ function SplashScreen(props) {
               color: colors.text,
             },
           ]}>
-          Di Aplikasi Pengaduan
+          Di {APP_NAME}
         </Text>
-        <Text style={styles.splashText}>Login dengan akun anda</Text>
+        {/* <Text style={styles.splashText}>Login dengan akun anda</Text> */}
         <View style={styles.splashButtonCover}>
           <TouchableOpacity
             onPress={() => props.navigation.navigate('LoginScreen')}>
             <LinearGradient
               colors={[Colors.Cyan, Colors.DarkCyan]}
               style={styles.splashLogin}>
-              <Text style={styles.splashLoginText}>Get Started</Text>
+              <Text style={styles.splashLoginText}>Yuk Mulai</Text>
               <MaterialIcons name="navigate-next" color="#fff" size={20} />
             </LinearGradient>
           </TouchableOpacity>

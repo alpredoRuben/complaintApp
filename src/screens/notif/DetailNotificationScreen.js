@@ -14,7 +14,7 @@ import {ToggleHeader} from '../../components';
 import Api from '../../utils/Api';
 import Authorization from '../../utils/Authorization';
 import {useSelector, useDispatch} from 'react-redux';
-import {setTotalNotif} from '../../actions';
+import {setTotalNotif, resetTotalNotif} from '../../actions';
 
 function DetailNotificationScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
@@ -120,21 +120,6 @@ function DetailNotificationScreen(props) {
     </SafeAreaView>
   );
 }
-
-export const optionDetailNotification = (props) => ({
-  headerTitle: 'Notifikasi',
-  headerLeft: () => {
-    return (
-      <ToggleHeader
-        name="ios-menu"
-        onPress={() => props.navigation.openDrawer()}
-      />
-    );
-  },
-  headerTitleStyle: {
-    alignSelf: 'center',
-  },
-});
 
 const styles = StyleSheet.create({
   dynamicBackground: (color) => ({backgroundColor: color}),

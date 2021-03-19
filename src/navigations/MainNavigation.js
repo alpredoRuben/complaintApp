@@ -109,11 +109,6 @@ export default function MainNavigation() {
     socket.on(
       `${CHN.assignedComplaintEventChannel.channelName}:${CHN.assignedComplaintEventChannel.eventName}`,
       (message) => {
-        console.log(
-          `EVENT CHANNEL ${CHN.assignedComplaintEventChannel.channelName}`,
-          message,
-        );
-
         if (userInfo.user.id == message.receiveData) {
           onShowNotification({
             id: message.mobileNotif.id,

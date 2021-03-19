@@ -13,8 +13,9 @@ import {
   Image,
 } from 'react-native';
 import moment from 'moment';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {Button} from 'react-native-paper';
 import {useSelector} from 'react-redux';
-import {ToggleHeader} from '../../components';
 import Api from '../../utils/Api';
 import Authorization from '../../utils/Authorization';
 
@@ -42,6 +43,7 @@ export default function DetailComplaintScreen(props) {
   };
 
   useEffect(() => {
+    console.log('Run Detail Component');
     fetchComplaint();
     setLoading(false);
     return () => {};
@@ -81,13 +83,11 @@ export default function DetailComplaintScreen(props) {
   };
 
   const confirmComplaintHandler = () => {
-    console.log('Complaint', complaint);
     startWorkComplaint();
     setIsConfirm(true);
   };
 
   const submitFinishedWork = () => {
-    console.log('Complaint', complaint);
     props.navigation.navigate('ComplaintStackScreen', {
       screen: 'FinishComplaintScreen',
       params: {
@@ -142,39 +142,29 @@ export default function DetailComplaintScreen(props) {
         return (
           <>
             <View style={styles.dividerHorizonTop(0, 15)}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#811991',
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 5,
-                }}
+              <Button
+                icon="cart"
+                mode="contained"
+                style={{backgroundColor: '#811991'}}
                 onPress={submitOrderProduct}>
-                <View style={{margin: 10}}>
-                  <Text style={{fontSize: 16, color: 'white'}}>
-                    Pesan & Ambil Barang
-                  </Text>
-                </View>
-              </TouchableOpacity>
+                PESAN BARANG
+              </Button>
             </View>
 
             <View style={styles.dividerHorizonTop(0, 15)}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#128c37',
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 5,
-                }}
+              <Button
+                icon={({size, color}) => (
+                  <Icon
+                    name="list-circle-outline"
+                    size={size + 5}
+                    color={color}
+                  />
+                )}
+                mode="contained"
+                style={{backgroundColor: '#128c37'}}
                 onPress={submitFinishedWork}>
-                <View style={{margin: 10}}>
-                  <Text style={{fontSize: 16, color: 'white'}}>
-                    Lapor Pekerjaan Selesai
-                  </Text>
-                </View>
-              </TouchableOpacity>
+                LAPOR PEKERJAAN SELESAI
+              </Button>
             </View>
           </>
         );
@@ -192,45 +182,10 @@ export default function DetailComplaintScreen(props) {
       <ScrollView
         style={{flex: 1, padding: 2}}
         showsVerticalScrollIndicator={false}>
-        {/* JUDUL */}
-        <View
-          style={{
-            alignItems: 'center',
-            marginTop: 5,
-            marginBottom: 15,
-          }}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: 'bold',
-              textAlign: 'left',
-              textDecorationLine: 'underline',
-              color: '#0e868a',
-            }}>
-            Judul
-          </Text>
-          <Text
-            style={{
-              fontSize: 13,
-              textAlign: 'center',
-              color: '#2e3945',
-            }}>
-            {complaint.title}
-          </Text>
-        </View>
-
         {/* PESAN */}
         <View style={styles.coverRows}>
-          <Text style={styles.textSubtitle}>Pesan Pengaduan</Text>
+          <Text style={styles.textSubtitle}>Uraian Pengaduan</Text>
           <Text style={styles.textInfoSubtitle}>{complaint.messages}</Text>
-        </View>
-
-        {/* STATUS PENGADUAN */}
-        <View style={styles.coverRows}>
-          <Text style={styles.textSubtitle}>Sifat Pengaduan</Text>
-          <Text style={styles.textInfoSubtitle}>
-            {complaint.is_urgent ? 'Perihal Penting' : 'Perihal Biasa'}
-          </Text>
         </View>
 
         {/* WAKTU PENGIRIMAN PESAN */}
@@ -244,7 +199,7 @@ export default function DetailComplaintScreen(props) {
         {/* PENGIRIM PESAN PENGADUAN */}
         {userInfo.user.roles[0].slug === 'admin' && (
           <View style={styles.coverRows}>
-            <Text style={styles.textSubtitle}>Pengirim Pesan Pengaduan</Text>
+            <Text style={styles.textSubtitle}>Pengirim Pengaduan</Text>
             <Text style={styles.textInfoSubtitle}>{complaint.sender.name}</Text>
           </View>
         )}
@@ -371,41 +326,24 @@ export default function DetailComplaintScreen(props) {
         {renderButton()}
 
         <View style={styles.dividerHorizonVertical(0, 15)}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#637876',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 5,
-            }}
+          <Button
+            icon={({size, color}) => (
+              <Icon
+                name="chevron-back-circle-outline"
+                size={size + 5}
+                color={color}
+              />
+            )}
+            mode="contained"
+            style={{backgroundColor: '#637876'}}
             onPress={() => props.navigation.replace('ComplaintScreen')}>
-            <View style={{margin: 10}}>
-              <Text style={{fontSize: 16, color: 'white'}}>Kembali</Text>
-            </View>
-          </TouchableOpacity>
+            KEMBALI
+          </Button>
         </View>
       </ScrollView>
     </View>
   );
 }
-
-export const optionDetailComplaint = (props) => {
-  return {
-    headerTitle: 'Detail Pengaduan',
-    headerLeft: () => {
-      return (
-        <ToggleHeader
-          name="ios-menu"
-          onPress={() => props.navigation.openDrawer()}
-        />
-      );
-    },
-    headerTitleStyle: {
-      alignSelf: 'center',
-    },
-  };
-};
 
 const styles = StyleSheet.create({
   dynamicBackground: (color) => ({backgroundColor: color}),

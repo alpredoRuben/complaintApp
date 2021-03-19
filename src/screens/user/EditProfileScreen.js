@@ -16,7 +16,6 @@ import ImagePicker from 'react-native-image-picker';
 import {Button, ActivityIndicator, Colors} from 'react-native-paper';
 import {useSelector, useDispatch} from 'react-redux';
 import {setUserAction} from '../../actions/AuthAction';
-import {ToggleHeader} from '../../components';
 import Api from '../../utils/Api';
 
 export default function EditProfileScreen(props) {
@@ -266,21 +265,6 @@ export default function EditProfileScreen(props) {
     </View>
   );
 }
-
-export const optionEditProfile = (props) => ({
-  headerTitle: 'Edit Profil Pengguna',
-  headerLeft: () => {
-    return (
-      <ToggleHeader
-        name="ios-menu"
-        onPress={() => props.navigation.openDrawer()}
-      />
-    );
-  },
-  headerTitleStyle: {
-    alignSelf: 'center',
-  },
-});
 
 const styles = StyleSheet.create({
   formGroup: {

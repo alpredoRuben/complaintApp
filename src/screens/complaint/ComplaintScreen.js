@@ -11,40 +11,58 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
-import {Button, Searchbar, FAB} from 'react-native-paper';
+import {Button, RadioButton, FAB} from 'react-native-paper';
 import {ScrollView} from 'react-native-gesture-handler';
+import DatePicker from 'react-native-datepicker';
 import moment from 'moment';
+
 import Colors from '../../utils/Colors';
 import Api from '../../utils/Api';
 import Authorization from '../../utils/Authorization';
-import {ToggleHeader} from '../../components';
 import {useSelector} from 'react-redux';
 
-const elements = [
-  {
-    key: 'not_assigned',
-    title: 'Menunggu Disetujui',
-  },
-  {
-    key: 'assigned_accepted',
-    title: 'Distujui & Dikerjakan',
-  },
-  {
-    key: 'finished',
-    title: 'Sudah Selesai',
-  },
-];
+const elements = (slug) => {
+  if (slug == 'admin' || slug == 'customer') {
+    return [
+      {
+        key: 'not_assigned',
+        title: 'Menunggu Disetujui',
+      },
+      {
+        key: 'assigned_accepted',
+        title: 'Distujui & Dikerjakan',
+      },
+      {
+        key: 'finished',
+        title: 'Sudah Selesai',
+      },
+    ];
+  }
+
+  return [
+    {
+      key: 'assigned_accepted',
+      title: 'Distujui & Dikerjakan',
+    },
+    {
+      key: 'finished',
+      title: 'Sudah Selesai',
+    },
+  ];
+};
 
 function ComplaintScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
-  const [selectedIndex, setSelectedIndex] = useState(
-    userInfo.user.roles[0].slug === 'admin' ||
-      userInfo.user.roles[0].slug === 'pegawai'
-      ? 0
-      : 1,
-  );
-  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState({
+    dates: moment().format('YYYY-MM-DD'),
+    category:
+      userInfo.user.roles[0].slug === 'admin' ||
+      userInfo.user.roles[0].slug === 'customer'
+        ? 'not_assigned'
+        : 'assigned_accepted',
+    refresh: false,
+  });
+
   const [dataSource, setDataSource] = useState({
     errors: null,
     page: 1,
@@ -53,23 +71,16 @@ function ComplaintScreen(props) {
     complaints: [],
   });
 
-  const [subtitle, setSubtitle] = useState(elements[0].title);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      console.log('Now u call use focus effect');
-      fetchComplaints();
-    }, [dataSource.page, searchQuery, selectedIndex, subtitle]),
-  );
-
   const fetchComplaints = async () => {
     try {
       const results = await Api.get(
-        `/complaints?page=${dataSource.page}&search=${searchQuery}&sentences=${elements[selectedIndex].key}`,
+        `/complaints?page=${dataSource.page}&dates=${filters.dates}&sentences=${filters.category}`,
         Authorization(userInfo.token),
       );
-      console.log('Complaint Screen', results);
-      if (results.status === 200) {
+
+      console.log('Records Complaint', results);
+
+      if (results.status == 200) {
         if (dataSource.page === 1) {
           setDataSource({
             ...dataSource,
@@ -86,19 +97,46 @@ function ComplaintScreen(props) {
           });
         }
       }
-    } catch (err) {
+    } catch (error) {
       setDataSource({
         ...dataSource,
-        errors: err.response,
+        errors: error.response.data,
         loading: false,
       });
     }
+
+    setFilters({...filters, refresh: false});
   };
 
   useEffect(() => {
+    const unsubscribe = props.navigation.addListener('focus', () => {
+      console.log('Running Event Screen Focus');
+      setDataSource({
+        ...dataSource,
+        products: [],
+        page: 1,
+        total: 0,
+        loading: true,
+      });
+      setFilters({
+        ...filters,
+        dates: moment().format('YYYY-MM-DD'),
+        category:
+          userInfo.user.roles[0].slug === 'admin' ||
+          userInfo.user.roles[0].slug === 'customer'
+            ? 'not_assigned'
+            : 'assigned_accepted',
+        refresh: false,
+      });
+    });
+
+    console.log('Filters', filters);
     fetchComplaints();
-    return () => {};
-  }, [dataSource.page, searchQuery, selectedIndex, subtitle]);
+
+    return () => {
+      unsubscribe;
+    };
+  }, [dataSource.page, filters.refresh]);
 
   const loadMore = (p) => {
     setDataSource({
@@ -116,33 +154,41 @@ function ComplaintScreen(props) {
     });
   };
 
-  if (!userInfo) {
-    return props.navigation.navigate('LoginScreen');
-  }
+  const generateMoreString = (str) => {
+    if (str.length >= 100) {
+      return str.substring(0, 100) + '...(lainnya)';
+    }
+    return str;
+  };
 
+  /** RENDER ITEM */
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity onPress={() => showDetailComplaint(item)}>
-        <View style={styles.rowItemContainer}>
+        <View
+          style={[
+            styles.rowItemContainer,
+            {
+              shadowColor: '#082f69',
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+
+              elevation: 5,
+            },
+          ]}>
           <View style={styles.rowItemLeft}>
             <Text
               style={{
                 fontSize: 12,
                 fontWeight: 'bold',
-                color: '#03718a',
-              }}>
-              Judul Pengaduan
-            </Text>
-            <Text style={{fontSize: 11, color: 'black'}}>{item.title}</Text>
-
-            <Text
-              style={{
-                fontSize: 12,
-                fontWeight: 'bold',
-                color: '#03718a',
+                color: '#a65e08',
                 marginTop: 10,
               }}>
-              Pesan Pengaduan
+              Uraian Pengaduan
             </Text>
 
             <Text style={{fontSize: 11, color: 'black'}}>
@@ -195,11 +241,6 @@ function ComplaintScreen(props) {
 
           <View style={styles.rowItemRight}>
             <Text
-              style={styles.rowItemInfo(item.is_urgent ? '#0fa811' : '#777')}>
-              {item.is_urgent ? 'BERITA PENTING' : 'BERITA BIASA'}
-            </Text>
-
-            <Text
               style={styles.rowItemInfo(
                 item.is_finished ? '#038c05' : '#b9cc0a',
               )}>
@@ -230,7 +271,7 @@ function ComplaintScreen(props) {
     );
   };
 
-  //Render Footer
+  /** RENDER FOOTER */
   const renderFooter = () => {
     if (dataSource.total <= 0) {
       return null;
@@ -258,157 +299,223 @@ function ComplaintScreen(props) {
     );
   };
 
-  const onChangeSearch = (query) => {
-    setSearchQuery(query);
-  };
-
-  const updateSelectedIndex = (s) => {
-    setSelectedIndex(s);
-    setSubtitle(elements[s].title);
+  /** ON SUBMIT FILTER */
+  const onSubmitFilterHandler = () => {
     setDataSource({
       ...dataSource,
-      page: 1,
       loading: true,
+    });
+
+    console.log('Filters', filters);
+
+    fetchComplaints();
+  };
+
+  /** ON SUBMIT REFRESH */
+  const onSubmitRefreshHandler = () => {
+    setFilters({
+      ...filters,
+      dates: moment().format('YYYY-MM-DD'),
+      category:
+        userInfo.user.roles[0].slug === 'admin' ||
+        userInfo.user.roles[0].slug === 'customer'
+          ? 'not_assigned'
+          : 'assigned_accepted',
+      refresh: true,
     });
   };
 
-  const generateMoreString = (str) => {
-    if (str.length >= 100) {
-      return str.substring(0, 100) + '...(lainnya)';
-    }
-    return str;
-  };
-
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 1, flexDirection: 'column'}}>
+    <SafeAreaView style={{flex: 1, margin: 0}}>
+      <View style={{flex: 1, flexDirection: 'column', margin: 0}}>
+        {/* FILTER */}
         <View
           style={{
-            height: '8%',
-            width: '100%',
-            margin: 5,
+            flex: 2,
+            padding: 5,
+            borderBottomRightRadius: 50,
+            backgroundColor: '#f7f7f7',
+            shadowColor: '#e8eaed',
+            elevation: 12,
           }}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <ScrollView
-              showsHorizontalScrollIndicator={false}
-              horizontal={true}>
-              {elements.map((item, index) => {
-                if (item.key === 'not_assigned') {
-                  if (
-                    userInfo.user.roles[0].slug === 'admin' ||
-                    userInfo.user.roles[0].slug === 'pegawai'
-                  ) {
-                    return (
-                      <View
-                        key={`BUTTON-${index}-${item.key}`}
-                        style={{
-                          flex: 1,
-                          marginHorizontal: 10,
-                          width: '50%',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}>
-                        <Button
-                          key={`${item.key}-${index}`}
-                          mode="contained"
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={{flex: 1, padding: 5, justifyContent: 'flex-start'}}>
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+                  Filter Pengaduan
+                </Text>
+              </View>
+              <View style={{flexDirection: 'column'}}>
+                <View style={{marginVertical: 5}}>
+                  <Text style={{fontSize: 11, paddingVertical: 5}}>
+                    Tanggal Pengaduan
+                  </Text>
+                  <DatePicker
+                    style={{width: '100%'}}
+                    date={filters.dates}
+                    mode="date"
+                    placeholder="select date"
+                    format="YYYY-MM-DD"
+                    minDate="1945-08-17"
+                    confirmBtnText="Confirm"
+                    cancelBtnText="Cancel"
+                    customStyles={{
+                      dateIcon: {
+                        position: 'absolute',
+                        left: 0,
+                        top: 4,
+                        marginLeft: 0,
+                      },
+                      dateInput: {
+                        borderColor: '#85a6a6',
+                      },
+                    }}
+                    onDateChange={(date) => {
+                      setFilters({...filters, dates: date});
+                    }}
+                  />
+                </View>
+
+                <View style={{marginVertical: 5}}>
+                  <Text style={{fontSize: 11, paddingVertical: 5}}>
+                    Kategori Pengaduan
+                  </Text>
+                  <RadioButton.Group
+                    onValueChange={(newValue) =>
+                      setFilters({...filters, category: newValue})
+                    }
+                    value={filters.category}>
+                    {elements(userInfo.user.roles[0].slug).map((item) => (
+                      <View style={{flexDirection: 'row'}} key={item.key}>
+                        <View
                           style={{
-                            height: 50,
+                            width: '10%',
                             justifyContent: 'center',
-                            alignItems: 'center',
-                            flexWrap: 'wrap',
-                            backgroundColor:
-                              selectedIndex == index ? '#850391' : '#777',
-                            borderRadius: 5,
-                          }}
-                          onPress={() => updateSelectedIndex(index)}>
-                          <Text style={styles.elementsText}>{item.title}</Text>
-                        </Button>
+                          }}>
+                          <RadioButton value={item.key} />
+                        </View>
+                        <View
+                          style={{
+                            width: '90%',
+                            justifyContent: 'center',
+                            alignItems: 'flex-start',
+                          }}>
+                          <Text>{item.title}</Text>
+                        </View>
                       </View>
-                    );
-                  }
-                  return null;
-                } else {
-                  return (
-                    <View
-                      key={`BUTTON-${index}-${item.key}`}
+                    ))}
+                  </RadioButton.Group>
+                </View>
+
+                <View style={{marginVertical: 5}}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Button
+                      icon="filter"
                       style={{
-                        flex: 1,
-                        marginHorizontal: 10,
-                        width: '50%',
+                        height: 30,
+                        width: 120,
+                        marginHorizontal: 2,
+                        backgroundColor: '#0a348a',
+                        borderRadius: 5,
                         justifyContent: 'center',
                         alignItems: 'center',
-                      }}>
-                      <Button
-                        key={`${item.key}-${index}`}
-                        mode="contained"
-                        style={{
-                          height: 50,
-                          width: '100%',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          backgroundColor:
-                            selectedIndex == index ? '#850391' : '#777',
-                          borderRadius: 5,
-                        }}
-                        onPress={() => updateSelectedIndex(index)}>
-                        <Text style={styles.elementsText}>{item.title}</Text>
-                      </Button>
-                    </View>
-                  );
-                }
-              })}
-            </ScrollView>
-          </View>
+                      }}
+                      mode="contained"
+                      onPress={onSubmitFilterHandler}>
+                      FILTER
+                    </Button>
+
+                    <Button
+                      icon="refresh"
+                      style={{
+                        height: 30,
+                        width: 120,
+                        marginHorizontal: 2,
+                        backgroundColor: '#048f81',
+                        borderRadius: 5,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                      mode="contained"
+                      onPress={onSubmitRefreshHandler}>
+                      REFRESH
+                    </Button>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
         </View>
 
+        {/* FLATLIST */}
         <View
           style={{
-            height: '5%',
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: 10,
+            flex: 6,
           }}>
-          <View style={styles.middleCoverTitle}>
-            <Text style={styles.middleTitle}>{subtitle}</Text>
+          <View style={{flex: 1, padding: 5}}>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{fontWeight: 'bold', marginVertical: 10}}>
+                Data Pengaduan
+              </Text>
+            </View>
+            {dataSource.complaints.length > 0 ? (
+              <FlatList
+                style={{flex: 1}}
+                data={dataSource.complaints}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+                enableEmptySections={true}
+                ListFooterComponent={renderFooter}
+              />
+            ) : (
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{fontSize: 14, color: '#916306'}}>
+                  DATA PENGADUAN KOSONG
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
         <View
           style={{
             height: '10%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 5,
+            backgroundColor: '#f2f7fa',
           }}>
-          <Searchbar
-            placeholder="Search"
-            onChangeText={onChangeSearch}
-            value={searchQuery}
-          />
-        </View>
-
-        <View style={{height: '65%', padding: 10}}>
-          <FlatList
-            style={styles.cover}
-            data={dataSource.complaints}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            enableEmptySections={true}
-            ListFooterComponent={renderFooter}
-          />
-        </View>
-
-        <View style={styles.secondColumn}>
-          <View style={styles.container(1, 'row')}>
-            <View style={styles.secondRightCover}>
-              <Text style={styles.secondRightInfoText}>Total Data Row</Text>
-              <Text style={styles.secondRightInfoText}>{dataSource.total}</Text>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  fontSize: 13,
+                  color: Colors.PrimaryBackground,
+                  fontWeight: 'bold',
+                }}>
+                Total Data Row
+              </Text>
+              <Text
+                style={{
+                  fontSize: 13,
+                  color: Colors.PrimaryBackground,
+                  fontWeight: 'bold',
+                }}>
+                {dataSource.total}
+              </Text>
             </View>
           </View>
         </View>
       </View>
-      {userInfo.user.roles[0].slug === 'pegawai' && (
+
+      {userInfo.user.roles[0].slug === 'customer' && (
         <FAB
           style={styles.FABS}
           icon="plus"
@@ -424,23 +531,6 @@ function ComplaintScreen(props) {
   );
 }
 
-export const optionComplaint = (props) => {
-  return {
-    headerTitle: 'List Pengaduan',
-    headerLeft: () => {
-      return (
-        <ToggleHeader
-          name="ios-menu"
-          onPress={() => props.navigation.openDrawer()}
-        />
-      );
-    },
-    headerTitleStyle: {
-      alignSelf: 'center',
-    },
-  };
-};
-
 const styles = StyleSheet.create({
   elementsText: {
     color: 'white',
@@ -448,7 +538,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textTransform: 'uppercase',
   },
+
   cover: {flex: 1},
+
   container: (number, direction) => ({flex: number, flexDirection: direction}),
   firstColumn: {
     height: '80%',
@@ -536,9 +628,9 @@ const styles = StyleSheet.create({
   rowItemContainer: {
     flex: 1,
     margin: 5,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#d5e0eb',
     flexDirection: 'row',
-    borderColor: '#f2f2f2',
+    borderColor: '#bfd0e0',
     borderRadius: 5,
     borderWidth: 1,
   },

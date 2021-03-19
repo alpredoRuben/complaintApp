@@ -1,137 +1,117 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useRef, useState, useEffect} from 'react';
+import Carousel, {ParallaxImage} from 'react-native-snap-carousel';
 import {
   View,
   Text,
+  Dimensions,
   StyleSheet,
-  Image,
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
-import PushNotification from 'react-native-push-notification';
+const ENTRIES1 = [
+  {
+    title: 'Beautiful and dramatic Antelope Canyon',
+    subtitle: 'Lorem ipsum dolor sit amet et nuncat mergitur',
+    illustration: 'https://i.imgur.com/UYiroysl.jpg',
+  },
+  {
+    title: 'Earlier this morning, NYC',
+    subtitle: 'Lorem ipsum dolor sit amet',
+    illustration: 'https://i.imgur.com/UPrs1EWl.jpg',
+  },
+  {
+    title: 'White Pocket Sunset',
+    subtitle: 'Lorem ipsum dolor sit amet et nuncat ',
+    illustration: 'https://i.imgur.com/MABUbpDl.jpg',
+  },
+  {
+    title: 'Acrocorinth, Greece',
+    subtitle: 'Lorem ipsum dolor sit amet et nuncat mergitur',
+    illustration: 'https://i.imgur.com/KZsmUi2l.jpg',
+  },
+  {
+    title: 'The lone tree, majestic landscape of New Zealand',
+    subtitle: 'Lorem ipsum dolor sit amet',
+    illustration: 'https://i.imgur.com/2nCt3Sbl.jpg',
+  },
+];
+const {width: screenWidth} = Dimensions.get('window');
 
-export default function Samples(props) {
-  const [sources, setSources] = React.useState({
-    avatar: null,
-    photo: null,
-  });
+const Samples = (props) => {
+  const [entries, setEntries] = useState([]);
+  const carouselRef = useRef(null);
 
-  const getPictures = () => {
-    const options = {
-      title: 'Select Avatar',
-      customButtons: [{name: 'fb', title: 'Choose Photo from Facebook'}],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response from Image Picker Show Image', response);
-
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        let source = {uri: response.uri};
-
-        // You can also display the image using data:
-        // let source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-        setSources({
-          avatar: source,
-          photo: response.data,
-        });
-      }
-    });
+  const goForward = () => {
+    carouselRef.current.snapToNext();
   };
 
-  const showToast = () => {
-    console.log('Click Toast');
-    PushNotification.localNotificationSchedule({
-      message: 'My Notification Message', // (required)
-      date: new Date(Date.now() + 60), // in 60 secs
-      allowWhileIdle: false,
-    });
-  };
-
-  React.useEffect(() => {
-    PushNotification.configure({
-      onRegister: function (token) {
-        console.log('TOKEN:', token);
-      },
-
-      onNotification: function (notification) {
-        console.log('NOTIFICATION:', notification);
-        notification.finish(PushNotificationIOS.FetchResult.NoData);
-      },
-
-      onAction: function (notification) {
-        console.log('ACTION:', notification.action);
-        console.log('NOTIFICATION:', notification);
-      },
-
-      onRegistrationError: function (err) {
-        console.error(err.message, err);
-      },
-
-      permissions: {
-        alert: true,
-        badge: true,
-        sound: true,
-      },
-      popInitialNotification: true,
-      requestPermissions: Platform.OS === 'ios',
-    });
-
-    return () => {};
+  useEffect(() => {
+    setEntries(ENTRIES1);
   }, []);
+
+  const renderItem = ({item, index}, parallaxProps) => {
+    return (
+      <View style={styles.item}>
+        <ParallaxImage
+          source={{uri: item.illustration}}
+          containerStyle={styles.imageContainer}
+          style={styles.image}
+          parallaxFactor={0.4}
+          {...parallaxProps}
+        />
+        <Text style={styles.title} numberOfLines={2}>
+          {item.title}
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcome}>Konsep Koding Upload Gambar</Text>
-
-      <Image
-        source={sources.avatar}
-        style={{width: '100%', height: 300, margin: 10}}
+      <Carousel
+        ref={carouselRef}
+        sliderWidth={screenWidth}
+        sliderHeight={screenWidth}
+        itemWidth={screenWidth - 60}
+        data={entries}
+        renderItem={renderItem}
+        hasParallaxImages={true}
       />
 
       <TouchableOpacity
-        style={{margin: 10, padding: 10, backgroundColor: 'cyan'}}
-        onPress={showToast}>
-        <Text style={{color: 'red'}}>Click Toast</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={{backgroundColor: 'orange', margin: 10, padding: 10}}
-        onPress={getPictures}>
-        <Text style={{color: '#fff'}}>Pilih Image</Text>
+        style={{
+          marginBottom: 30,
+          backgroundColor: 'green',
+          marginHorizontal: 20,
+          padding: 20,
+        }}
+        onPress={goForward}>
+        <Text>go to next slide</Text>
       </TouchableOpacity>
     </View>
   );
-}
+};
+
+export default Samples;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  item: {
+    width: screenWidth - 60,
+    height: screenWidth - 60,
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  imageContainer: {
+    flex: 1,
+    marginBottom: Platform.select({ios: 0, android: 1}), // Prevent a random Android rendering issue
+    backgroundColor: 'white',
+    borderRadius: 8,
+  },
+  image: {
+    ...StyleSheet.absoluteFillObject,
+    resizeMode: 'cover',
   },
 });

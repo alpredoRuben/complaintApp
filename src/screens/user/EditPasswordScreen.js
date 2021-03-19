@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import {Button, ActivityIndicator, Colors, Checkbox} from 'react-native-paper';
 import {useSelector, useDispatch} from 'react-redux';
-import {ToggleHeader} from '../../components';
 import Api from '../../utils/Api';
 import Authorization from '../../utils/Authorization';
 import {logoutAction} from '../../actions';
@@ -141,21 +140,6 @@ export default function EditPasswordScreen(props) {
     </View>
   );
 }
-
-export const optionEditPassword = (props) => ({
-  headerTitle: 'Form Ubah Password',
-  headerLeft: () => {
-    return (
-      <ToggleHeader
-        name="ios-menu"
-        onPress={() => props.navigation.openDrawer()}
-      />
-    );
-  },
-  headerTitleStyle: {
-    alignSelf: 'center',
-  },
-});
 
 const styles = StyleSheet.create({
   formGroup: {

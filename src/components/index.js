@@ -4,6 +4,7 @@ import TypeItem from './complaints/TypeItem';
 import CardInfo from './atoms/CardInfo';
 import PrivateComplaint from './complaints/PrivateComplaint';
 import PublicComplaint from './complaints/PublicComplaint';
+import Headers from './atoms/Headers';
 
 export {
   Input,
@@ -12,4 +13,5 @@ export {
   PrivateComplaint,
   PublicComplaint,
   CardInfo,
+  Headers,
 };

@@ -10,19 +10,4 @@ function SettingScreen(props) {
   );
 }
 
-export const optionSetting = (props) => ({
-  headerTitle: 'Pengaturan',
-  headerLeft: () => {
-    return (
-      <ToggleHeader
-        name="ios-menu"
-        onPress={() => props.navigation.openDrawer()}
-      />
-    );
-  },
-  headerTitleStyle: {
-    alignSelf: 'center',
-  },
-});
-
 export default SettingScreen;

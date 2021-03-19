@@ -7,12 +7,10 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
-  Switch,
   TouchableOpacity,
   Alert,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import {ToggleHeader} from '../../components';
 import Api from '../../utils/Api';
 import Colors from '../../utils/Colors';
 import {useSelector} from 'react-redux';
@@ -22,9 +20,7 @@ export default function AddComplaintScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
   const [roles, setRoles] = useState([]);
   const [complaint, setComplaint] = useState({
-    title: '',
     messages: '',
-    is_urgent: false,
     type_id: null,
   });
 
@@ -105,11 +101,11 @@ export default function AddComplaintScreen(props) {
     <SafeAreaView style={styles.cover}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
-          <Text style={styles.titleText}>Kirim Pengaduan Baru</Text>
+          <Text style={styles.titleText}>Pengaduan Baru</Text>
 
           {/* Field Tujuan */}
           <View style={styles.separator}>
-            <Text style={styles.headingText}>Tujuan</Text>
+            <Text style={styles.headingText}>Tujuan Pengaduan</Text>
             <SelectBoxItem
               sources={roles}
               onChangeItem={(item) => onChangeRoles(item)}
@@ -117,20 +113,9 @@ export default function AddComplaintScreen(props) {
             />
           </View>
 
-          {/* Judul Pengaduan */}
-          <View style={styles.separator}>
-            <Text style={styles.headingText}>Judul</Text>
-            <TextInput
-              style={styles.textDefault}
-              onChangeText={(val) => complaintChangeHandler('title', val)}
-              value={complaint.title}
-              textAlignVertical="top"
-            />
-          </View>
-
           {/* Pesan */}
           <View style={styles.separator}>
-            <Text style={styles.headingText}>Pesan</Text>
+            <Text style={styles.headingText}>Uraian Pengaduan</Text>
             <TextInput
               multiline={true}
               style={styles.textMultiline}
@@ -140,31 +125,12 @@ export default function AddComplaintScreen(props) {
             />
           </View>
 
-          {/* Urgently */}
-          <View style={styles.separator}>
-            <View style={styles.switchContainer}>
-              <Text>
-                {complaint.is_urgent
-                  ? 'Pengaduan Bersifat Penting'
-                  : 'Biasa (Normal)'}
-              </Text>
-              <Switch
-                trackColor={{false: '#919191', true: '#07a641'}}
-                thumbColor={complaint.is_urgent ? '#0460c9' : '#d4d4d4'}
-                onValueChange={() =>
-                  complaintChangeHandler('is_urgent', !complaint.is_urgent)
-                }
-                value={complaint.is_urgent}
-              />
-            </View>
-          </View>
-
           {/* Submit */}
           <View style={styles.separator}>
             <TouchableOpacity
               style={styles.coverButtonSubmit}
               onPress={submitComplaintHandler}>
-              <Text style={styles.textButtonSubmit}>Kirim</Text>
+              <Text style={styles.textButtonSubmit}>KIRIM PESAN</Text>
             </TouchableOpacity>
           </View>
 
@@ -175,7 +141,7 @@ export default function AddComplaintScreen(props) {
               onPress={() => {
                 props.navigation.replace('ComplaintScreen');
               }}>
-              <Text style={styles.textButtonSubmit}>Batal & Kembali</Text>
+              <Text style={styles.textButtonSubmit}>BATAL & KEMBALI</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -183,23 +149,6 @@ export default function AddComplaintScreen(props) {
     </SafeAreaView>
   );
 }
-
-export const optionAddComplaint = (props) => {
-  return {
-    headerTitle: 'Form Pengaduan',
-    headerLeft: () => {
-      return (
-        <ToggleHeader
-          name="ios-menu"
-          onPress={() => props.navigation.openDrawer()}
-        />
-      );
-    },
-    headerTitleStyle: {
-      alignSelf: 'center',
-    },
-  };
-};
 
 const SelectBoxItem = ({sources, onChangeHandler, ...rest}) => {
   return (
@@ -239,7 +188,7 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   textMultiline: {
-    height: 100,
+    height: 180,
     justifyContent: 'flex-start',
     backgroundColor: Colors.White,
     borderColor: '#ddd',

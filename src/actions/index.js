@@ -6,6 +6,7 @@ import {
 } from './AuthAction';
 
 import {setTotalNotif, resetTotalNotif} from './NotificationAction';
+import {addCartAction} from './CartAction';
 
 export {
   successLoginAction,
@@ -14,4 +15,5 @@ export {
   setTotalNotif,
   resetTotalNotif,
   setUserAction,
+  addCartAction,
 };

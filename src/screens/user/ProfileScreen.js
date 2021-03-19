@@ -12,7 +12,6 @@ import {
 import {Icon} from 'react-native-elements';
 import {useSelector} from 'react-redux';
 import {UserAvatarPNG} from '../../assets';
-import {ToggleHeader} from '../../components';
 
 export default function ProfileScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
@@ -183,21 +182,6 @@ export default function ProfileScreen(props) {
     </View>
   );
 }
-
-export const optionProfile = (props) => ({
-  headerTitle: 'Profile',
-  headerLeft: () => {
-    return (
-      <ToggleHeader
-        name="ios-menu"
-        onPress={() => props.navigation.openDrawer()}
-      />
-    );
-  },
-  headerTitleStyle: {
-    alignSelf: 'center',
-  },
-});
 
 const styles = StyleSheet.create({
   flexOne: {flex: 1},

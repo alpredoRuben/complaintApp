@@ -4,11 +4,7 @@ import Colors from '../../utils/Colors';
 
 function ToggleHeader(props) {
   return (
-    <Icon.Button
-      size={25}
-      backgroundColor={Colors.PrimaryBackground}
-      {...props}
-    />
+    <Icon.Button size={25} backgroundColor={Colors.FaceColorTheme} {...props} />
   );
 }
 

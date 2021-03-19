@@ -13,7 +13,6 @@ import {
 import {ActivityIndicator, Colors, Button} from 'react-native-paper';
 import ImagePicker from 'react-native-image-picker';
 import {useSelector} from 'react-redux';
-import {ToggleHeader} from '../../components';
 import Api from '../../utils/Api';
 import Authorization from '../../utils/Authorization';
 
@@ -178,7 +177,7 @@ export default function FinishComplaintScreen(props) {
               fontWeight: 'bold',
               width: '40%',
             }}>
-            Judul Pengaduan
+            Uraian Pengaduan
           </Text>
           <Text
             style={{
@@ -187,7 +186,7 @@ export default function FinishComplaintScreen(props) {
               textAlign: 'justify',
               width: '60%',
             }}>
-            {complaint.title}
+            {complaint.messages}
           </Text>
         </View>
 
@@ -353,18 +352,3 @@ export default function FinishComplaintScreen(props) {
     </View>
   );
 }
-
-export const optionFinishComplaint = (props) => ({
-  headerTitle: 'Form Laporan Pekerjaan',
-  headerLeft: () => {
-    return (
-      <ToggleHeader
-        name="ios-menu"
-        onPress={() => props.navigation.openDrawer()}
-      />
-    );
-  },
-  headerTitleStyle: {
-    alignSelf: 'center',
-  },
-});
