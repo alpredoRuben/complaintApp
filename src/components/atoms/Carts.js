@@ -16,7 +16,7 @@ const Carts = (props) => {
   return (
     <TouchableOpacity
       style={{
-        marginRight: 10,
+        marginRight: 15,
         width: 50,
         padding: 5,
         borderRadius: 50,

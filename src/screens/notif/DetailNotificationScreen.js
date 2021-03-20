@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, {useState, useEffect} from 'react';
@@ -57,20 +58,21 @@ function DetailNotificationScreen(props) {
   };
 
   useEffect(() => {
-    if (userInfo && notifId) {
+    const unsubscribe = props.navigation.addListener('focus', () => {
       readNotification(notifId);
-      fetchNotification();
-    }
+    });
+
+    readNotification(notifId);
+    fetchNotification();
     setIsLoading(false);
-    return () => {};
+    return () => {
+      unsubscribe;
+    };
   }, []);
 
   if (isLoading) {
     return (
       <View style={[styles.loadingContainer, styles.loadingHorizontal]}>
-        <ActivityIndicator size="large" />
-        <ActivityIndicator size="small" color="#0000ff" />
-        <ActivityIndicator size="large" color="#00ff00" />
         <ActivityIndicator size="large" color="#00ff00" />
       </View>
     );
@@ -81,42 +83,28 @@ function DetailNotificationScreen(props) {
   }
 
   const resData = JSON.parse(notifications.data);
-
+  console.log(resData);
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        alwaysBounceVertical={true}
-        style={styles.dynamicBackground('#ccc')}>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.container}>
         <View style={styles.cover}>
           <View style={styles.header}>
             <Text style={styles.textHeader}>Pesan Notifikasi</Text>
-            <Text style={styles.textInfoHeader}>{notifications.messages}</Text>
           </View>
 
           <View style={styles.dividerHorizonTop(10, 5)}>
-            <Text style={styles.textLabel}>Judul Pengaduan</Text>
-            <Text style={styles.textMessage}>{resData.title}</Text>
-          </View>
-
-          <View style={styles.dividerHorizonTop(10, 5)}>
-            <Text style={styles.textLabel}>Pesan Pengaduan</Text>
+            <Text style={styles.textLabel}>Uraian Pengaduan</Text>
             <Text style={styles.textMessage}>{resData.messages}</Text>
           </View>
 
-          <View style={styles.dividerHorizonTop(10, 15)}>
-            <Text style={styles.textLabel}>Sifat Pengaduan</Text>
-            <View
-              style={styles.coverDynamic(
-                resData.is_urgent ? 'red' : 'blue',
-                '100%',
-              )}>
-              <Text style={styles.textWhiteDynamic}>
-                {resData.is_urgent ? 'Penting' : 'Normal'}
-              </Text>
-            </View>
+          <View style={styles.dividerHorizonTop(10, 5)}>
+            <Text style={styles.textLabel}>Waktu Pengaduan</Text>
+            <Text style={styles.textMessage}>
+              {moment(resData.created_at).format('DD MMM YYYY, HH:mm:ss')}
+            </Text>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -135,9 +123,8 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f7f7f7',
+    justifyContent: 'flex-start',
+    backgroundColor: '#bbb',
   },
 
   cover: {

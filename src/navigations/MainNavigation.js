@@ -89,18 +89,22 @@ export default function MainNavigation() {
     socket.on(
       `${CHN.complaintEventChannel.channelName}:${CHN.complaintEventChannel.eventName}`,
       (message) => {
-        console.log(
-          `EVENT CHANNEL ${CHN.complaintEventChannel.channelName}`,
-          message,
-        );
+        const {roleName, mobileNotif: notifs} = message;
 
-        if (userInfo.user.id == message.receiveData) {
-          onShowNotification({
-            id: message.mobileNotif.id,
-            title: 'Info Pengaduan Baru',
-            message: message.mobileNotif.messages,
-            date: new Date(Date.now() + 10),
-          });
+        if (userInfo.user.roles[0].slug == roleName) {
+          const filterNotif = notifs.filter(
+            (item) => item.receiver_id == userInfo.user.id,
+            [],
+          );
+
+          if (filterNotif.length > 0) {
+            onShowNotification({
+              id: filterNotif[0].id,
+              title: 'Entry Pengaduan Baru',
+              message: filterNotif[0].messages,
+              date: new Date(Date.now() + 10),
+            });
+          }
         }
       },
     );
@@ -109,11 +113,21 @@ export default function MainNavigation() {
     socket.on(
       `${CHN.assignedComplaintEventChannel.channelName}:${CHN.assignedComplaintEventChannel.eventName}`,
       (message) => {
-        if (userInfo.user.id == message.receiveData) {
+        const {receiveData: receivers, mobileNotif: notifs} = message;
+        const filters = receivers.filter(
+          (item) => item == userInfo.user.id,
+          [],
+        );
+
+        if (filters.length > 0) {
+          const filterNotif = notifs.filter(
+            (item) => item.receiver_id == userInfo.user.id,
+            [],
+          );
           onShowNotification({
-            id: message.mobileNotif.id,
-            title: 'Konfirmasi dan Penugasan Pengaduan',
-            message: message.mobileNotif.messages,
+            id: filterNotif[0].id,
+            title: 'KONFIRMASI PENGADUAN',
+            message: filterNotif[0].messages,
             date: new Date(Date.now() + 10),
           });
         }
@@ -124,46 +138,48 @@ export default function MainNavigation() {
     socket.on(
       `${CHN.startWorkingComplaintEventChannel.channelName}:${CHN.startWorkingComplaintEventChannel.eventName}`,
       (message) => {
-        console.log(
-          `EVENT CHANNEL ${CHN.startWorkingComplaintEventChannel.channelName}`,
-          message,
-        );
-
-        const filters = message.receiveData.filter(
+        const {messageNotif: notifs, receiveData: receivers} = message;
+        const filters = receivers.filter(
           (item) => item == userInfo.user.id,
+          [],
         );
 
-        if (filters.length > 0 && filters[0] == userInfo.user.id) {
+        if (filters.length > 0) {
+          const filterNotif = notifs.filter(
+            (item) => item.receiver_id == userInfo.user.id,
+            [],
+          );
           onShowNotification({
-            id: message.mobileNotif.id,
+            id: filterNotif[0].id,
             title: 'Pengaduan Diterima dan Dikerjakan',
-            message: message.mobileNotif.messages,
+            message: filterNotif[0].messages,
             date: new Date(Date.now() + 10),
           });
         }
       },
     );
 
-    /** START WORKING EVENT CHANNEL */
+    /** FINISH COMPLAINT EVENT CHANNEL */
     socket.on(
       `${CHN.finishedWorkingComplaintEventChannel.channelName}:${CHN.finishedWorkingComplaintEventChannel.eventName}`,
       (message) => {
-        console.log(
-          `EVENT CHANNEL ${CHN.finishedWorkingComplaintEventChannel.channelName}`,
-          message,
-        );
+        const {receiveData: receivers, mobileNotif: notifs} = message;
+        const filters = receivers.filter((item) => item == userInfo.user.id);
 
-        const filters = message.receiveData.filter(
-          (item) => item == userInfo.user.id,
-        );
+        if (filters.length > 0) {
+          const filterNotif = notifs.filter(
+            (item) => item.receiver_id == userInfo.user.id,
+            [],
+          );
 
-        if (filters.length > 0 && filters[0] == userInfo.user.id) {
-          onShowNotification({
-            id: message.mobileNotif.id,
-            title: 'Pekerjaan selesai dan sudah dilapor',
-            message: message.mobileNotif.messages,
-            date: new Date(Date.now() + 10),
-          });
+          if (filterNotif.length > 0) {
+            onShowNotification({
+              id: filterNotif[0].id,
+              title: 'PEKERJAAN SELESAI DAN SUDAH DILAPOR',
+              message: filterNotif[0].messages,
+              date: new Date(Date.now() + 10),
+            });
+          }
         }
       },
     );

@@ -14,8 +14,6 @@ import {
 import Carousel, {ParallaxImage} from 'react-native-snap-carousel';
 import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
-
-import {ToggleHeader} from '../../components';
 import {ActivityIndicator} from 'react-native-paper';
 
 //Utils
@@ -204,7 +202,11 @@ export default function DetailCartScreen(props) {
               ref={carouselRef}
               sliderWidth={screenWidth}
               itemWidth={screenWidth - 30}
-              data={dataSource.product ? dataSource.product.file_images : []}
+              data={
+                dataSource.product.file_images instanceof Array
+                  ? dataSource.product.file_images
+                  : []
+              }
               renderItem={renderCarouselItem}
               hasParallaxImages={true}
               slideStyle={{flex: 1}}

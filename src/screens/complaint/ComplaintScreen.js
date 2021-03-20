@@ -126,7 +126,7 @@ function ComplaintScreen(props) {
           userInfo.user.roles[0].slug === 'customer'
             ? 'not_assigned'
             : 'assigned_accepted',
-        refresh: false,
+        refresh: true,
       });
     });
 

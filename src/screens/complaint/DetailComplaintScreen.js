@@ -8,7 +8,6 @@ import {
   ScrollView,
   ActivityIndicator,
   StyleSheet,
-  TouchableOpacity,
   Alert,
   Image,
 } from 'react-native';
@@ -115,21 +114,15 @@ export default function DetailComplaintScreen(props) {
       ) {
         return (
           <View style={styles.dividerHorizonTop(0, 15)}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: '#068a9e',
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 5,
-              }}
+            <Button
+              icon={({size, color}) => (
+                <Icon name="send-outline" size={size + 5} color={color} />
+              )}
+              mode="contained"
+              style={{backgroundColor: '#068a9e'}}
               onPress={confirmComplaintHandler}>
-              <View style={{margin: 10}}>
-                <Text style={{fontSize: 16, color: 'white'}}>
-                  Konfirmasi & Ambil Pekerjaan
-                </Text>
-              </View>
-            </TouchableOpacity>
+              KONFIRMASI & AMBIL PEKERJAAN
+            </Button>
           </View>
         );
       }

@@ -37,7 +37,7 @@ const drawerRoutes = [
     name: 'InventoryStackScreen',
     component: InventoryStackScreen,
     roles: 'all',
-    notUser: 'pegawai',
+    notUser: 'customer',
   },
 ];
 

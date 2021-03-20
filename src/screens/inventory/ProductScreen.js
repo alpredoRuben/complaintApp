@@ -305,7 +305,7 @@ export default function ProductScreen(props) {
           style={{
             width: width,
             height: height - 45,
-            backgroundColor: '#c3dfe3',
+            backgroundColor: '#bac4db',
             paddingVertical: 10,
           }}>
           {!loading && dataSource.products.length > 0 ? (
@@ -322,8 +322,7 @@ export default function ProductScreen(props) {
           ) : (
             <View
               style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text
-                style={{fontSize: 18, fontWeight: 'bold', color: '#cf7f1b'}}>
+              <Text style={{fontSize: 18, fontWeight: 'bold', color: 'white'}}>
                 DATA BARANG KOSONG
               </Text>
             </View>

@@ -81,7 +81,7 @@ function DrawerContent(props) {
             />
 
             {/* Menu Inventory */}
-            {userInfo.user.roles[0].slug.toLowerCase() !== 'pegawai' && (
+            {userInfo.user.roles[0].slug.toLowerCase() !== 'customer' && (
               <DrawerItem
                 activeTintColor={Colors.PrimaryTransparancy}
                 label={({color}) => <Text style={{color}}>Inventaris</Text>}
