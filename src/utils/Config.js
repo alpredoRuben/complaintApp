@@ -35,4 +35,12 @@ export const STATIC_EVENT_CHANNEL = () => ({
     channelName: 'notification-channel',
     eventName: 'NotificationEvent',
   },
+  orderEventChannel: {
+    channelName: {
+      agree: 'agree-order-channel',
+      disagree: 'disagree-order-channel',
+      add: 'add-order-channel',
+    },
+    eventName: 'CartOrderEvent',
+  },
 });

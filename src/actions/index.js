@@ -6,7 +6,12 @@ import {
 } from './AuthAction';
 
 import {setTotalNotif, resetTotalNotif} from './NotificationAction';
-import {addCartAction} from './CartAction';
+import {
+  getUserCart,
+  addCartAction,
+  deleteCartAction,
+  destroyedOrderAction,
+} from './CartAction';
 
 export {
   successLoginAction,
@@ -15,5 +20,8 @@ export {
   setTotalNotif,
   resetTotalNotif,
   setUserAction,
+  getUserCart,
   addCartAction,
+  deleteCartAction,
+  destroyedOrderAction,
 };

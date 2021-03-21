@@ -15,7 +15,7 @@ const persistedReducer = persistReducer(
   {
     key: 'root',
     storage: AsyncStorage,
-    blacklist: ['AuthReducer'],
+    blacklist: ['AuthReducer', 'CartReducer'],
   },
   rootReducer,
 );

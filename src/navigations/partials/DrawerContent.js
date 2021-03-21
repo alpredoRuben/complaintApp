@@ -99,6 +99,24 @@ function DrawerContent(props) {
               />
             )}
 
+            {/* Menu Cart */}
+            {userInfo.user.roles[0].slug.toLowerCase() !== 'customer' && (
+              <DrawerItem
+                activeTintColor={Colors.PrimaryTransparancy}
+                label={({color}) => (
+                  <Text style={{color}}>Keranjang Pemesanan</Text>
+                )}
+                icon={({color, size}) => (
+                  <Icon name="cart-outline" size={size} color={color} />
+                )}
+                onPress={() =>
+                  props.navigation.navigate('CartStackScreen', {
+                    screen: 'CartScreen',
+                  })
+                }
+              />
+            )}
+
             {/* Item Menu Notification */}
             <DrawerItem
               activeTintColor={Colors.PrimaryTransparancy}

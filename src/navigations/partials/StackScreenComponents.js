@@ -19,6 +19,7 @@ import {
   EditPasswordScreen,
   ProductScreen,
   DetailCartScreen,
+  CartScreen,
 } from '../../screens';
 
 const navigatorScreenOption = () => ({
@@ -38,6 +39,7 @@ const ComplaintStack = createStackNavigator();
 const SettingStack = createStackNavigator();
 const NotifStack = createStackNavigator();
 const InventoryStack = createStackNavigator();
+const CartStack = createStackNavigator();
 
 /** Dashboard Stack Screen */
 export function DashboardStackScreen(props) {
@@ -172,3 +174,16 @@ export const InventoryStackScreen = (props) => {
     </InventoryStack.Navigator>
   );
 };
+
+/** Cart Stack Screen */
+export function CartStackScreen(props) {
+  return (
+    <CartStack.Navigator screenOptions={navigatorScreenOption}>
+      <CartStack.Screen
+        name="CartScreen"
+        component={CartScreen}
+        options={Headers(props, 'KERANJANG PEMESANAN')}
+      />
+    </CartStack.Navigator>
+  );
+}

@@ -7,6 +7,7 @@ const AuthStack = createStackNavigator();
 
 function Mains(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
+
   return userInfo && userInfo !== null ? (
     <MainNavigation />
   ) : (

@@ -10,7 +10,7 @@ import {SOCKET_IO_URL, STATIC_EVENT_CHANNEL} from '../utils/Config';
 import PushNotification from 'react-native-push-notification';
 import {Platform} from 'react-native';
 import Authorization from '../utils/Authorization';
-import {setTotalNotif} from '../actions';
+import {setTotalNotif, getUserCart} from '../actions';
 import Api from '../utils/Api';
 
 const CHN = STATIC_EVENT_CHANNEL();
@@ -18,6 +18,7 @@ const Drawer = createDrawerNavigator();
 
 export default function MainNavigation() {
   const {userInfo} = useSelector((state) => state.AuthReducer);
+
   const dispatch = useDispatch();
 
   let navigators;
@@ -47,6 +48,13 @@ export default function MainNavigation() {
   React.useEffect(() => {
     if (!userInfo) {
       navigators.navigation.navigate('SplashScreen');
+    } else {
+      if (
+        userInfo.user.roles[0].slug != 'admin' &&
+        userInfo.user.roles[0].slug != 'customer'
+      ) {
+        dispatch(getUserCart());
+      }
     }
 
     PushNotification.configure({
@@ -138,17 +146,13 @@ export default function MainNavigation() {
     socket.on(
       `${CHN.startWorkingComplaintEventChannel.channelName}:${CHN.startWorkingComplaintEventChannel.eventName}`,
       (message) => {
-        const {messageNotif: notifs, receiveData: receivers} = message;
-        const filters = receivers.filter(
-          (item) => item == userInfo.user.id,
+        const {messageNotif: notifs} = message;
+        const filterNotif = notifs.filter(
+          (item) => item.receiver_id == userInfo.user.id,
           [],
         );
 
-        if (filters.length > 0) {
-          const filterNotif = notifs.filter(
-            (item) => item.receiver_id == userInfo.user.id,
-            [],
-          );
+        if (filterNotif.length > 0 && filterNotif[0].id == userInfo.user.id) {
           onShowNotification({
             id: filterNotif[0].id,
             title: 'Pengaduan Diterima dan Dikerjakan',
