@@ -44,3 +44,11 @@ export const deleteCartAction = (order) => async (dispatch) => {
 export const destroyedOrderAction = () => async (dispatch) => {
   dispatch({type: DESTROYED_ORDER});
 };
+
+export const setUserCartAction = (orders) => async (dispatch) => {
+  dispatch({type: READ_ORDER_CART, payload: orders});
+};
+
+export const setErrorCartAction = (error) => async (dispatch) => {
+  dispatch({type: ERROR_CART, payload: error});
+};

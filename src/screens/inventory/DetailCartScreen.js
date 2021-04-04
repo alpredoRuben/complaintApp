@@ -10,6 +10,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  Image,
 } from 'react-native';
 import Carousel, {ParallaxImage} from 'react-native-snap-carousel';
 import {Button} from 'react-native-paper';
@@ -21,6 +22,7 @@ import Api from '../../utils/Api';
 import Authorization from '../../utils/Authorization';
 import {useSelector, useDispatch} from 'react-redux';
 import {addCartAction} from '../../actions';
+import {NoImage} from '../../assets';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -55,7 +57,7 @@ export default function DetailCartScreen(props) {
           error: null,
         });
       }
-
+      console.log('Data Source', dataSource);
       setLoading(false);
     } catch (error) {
       setDataSource({...dataSource, error: error.response.data, product: {}});
@@ -197,7 +199,7 @@ export default function DetailCartScreen(props) {
             alignItems: 'center',
             marginBottom: 10,
           }}>
-          {dataSource.product ? (
+          {dataSource.product && dataSource.product.length > 0 ? (
             <Carousel
               ref={carouselRef}
               sliderWidth={screenWidth}
@@ -212,9 +214,10 @@ export default function DetailCartScreen(props) {
               slideStyle={{flex: 1}}
             />
           ) : (
-            <Text style={{fontSize: 14, fontWeight: 'bold'}}>
-              GAMBAR BARANG KOSONG
-            </Text>
+            <Image
+              source={NoImage}
+              style={{width: screenWidth - 30, height: screenWidth - 100}}
+            />
           )}
         </View>
 

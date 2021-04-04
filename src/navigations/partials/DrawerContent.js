@@ -7,17 +7,23 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Colors from '../../utils/Colors';
 import {UserAvatarPNG} from '../../assets';
 import {useSelector, useDispatch} from 'react-redux';
-import {logoutAction, resetTotalNotif} from '../../actions';
+import {
+  logoutAction,
+  resetTotalNotif,
+  destroyedOrderAction,
+} from '../../actions';
 import {CommonActions} from '@react-navigation/native';
 
 function DrawerContent(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
+  const {carts} = useSelector((state) => state.CartReducer);
   const {total} = useSelector((state) => state.SetTotalNotification);
   const dispatch = useDispatch();
 
   const signOut = () => {
-    dispatch(resetTotalNotif());
     dispatch(logoutAction());
+    dispatch(resetTotalNotif());
+    dispatch(destroyedOrderAction());
   };
 
   const capitalizeFirstLetter = (string) => {
@@ -103,9 +109,33 @@ function DrawerContent(props) {
             {userInfo.user.roles[0].slug.toLowerCase() !== 'customer' && (
               <DrawerItem
                 activeTintColor={Colors.PrimaryTransparancy}
-                label={({color}) => (
-                  <Text style={{color}}>Keranjang Pemesanan</Text>
-                )}
+                label={({color}) =>
+                  carts.length > 0 ? (
+                    <View
+                      style={{
+                        flex: 1,
+                        flexDirection: 'row',
+                      }}>
+                      <View style={{width: '80%'}}>
+                        <Text style={{color}}>Pemesanan</Text>
+                      </View>
+                      <View
+                        style={{
+                          width: '10%',
+                          flex: 1,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: carts.length > 0 ? 'red' : 'white',
+                          paddingHorizontal: 2,
+                          borderRadius: 10,
+                        }}>
+                        <Text style={{color: 'white'}}>{carts.length}</Text>
+                      </View>
+                    </View>
+                  ) : (
+                    <Text style={{color}}>Pemesanan</Text>
+                  )
+                }
                 icon={({color, size}) => (
                   <Icon name="cart-outline" size={size} color={color} />
                 )}
@@ -126,7 +156,6 @@ function DrawerContent(props) {
                     style={{
                       flex: 1,
                       flexDirection: 'row',
-                      padding: 10,
                     }}>
                     <View style={{width: '85%'}}>
                       <Text style={{color}}>Notifikasi</Text>

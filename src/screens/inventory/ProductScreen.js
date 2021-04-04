@@ -17,15 +17,15 @@ import {
 import RBSheet from 'react-native-raw-bottom-sheet';
 import {ActivityIndicator, RadioButton, Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {useSelector} from 'react-redux';
 
-//Utils
 import Api from '../../utils/Api';
 import Authorization from '../../utils/Authorization';
-import {useSelector} from 'react-redux';
+import {NoImage} from '../../assets';
 
 const {width, height} = Dimensions.get('screen');
 const SCREEN_WIDTH = width < height ? width : height;
-const PRODUCT_ITEM_HEIGHT = 255;
+// const PRODUCT_ITEM_HEIGHT = 255;
 const PRODUCT_ITEM_OFFSET = 5;
 const PRODUCT_ITEM_MARGIN = PRODUCT_ITEM_OFFSET * 2;
 const numColumns = SCREEN_WIDTH <= 414 ? 2 : 3;
@@ -51,26 +51,24 @@ export default function ProductScreen(props) {
 
   const fetchProducts = async () => {
     const url = `/products?page=${dataSource.page}&types=${filter.types}&search=${filter.search}`;
+    let tmpProducts = [];
     try {
       const {data, status} = await Api.get(url, Authorization(userInfo.token));
 
       if (status === 200) {
-        if (dataSource.page === 1) {
-          setDataSource({
-            ...dataSource,
-            total: data.total,
-            products: data.data,
-            error: null,
-          });
+        if (data.current_page > 1) {
+          tmpProducts = dataSource.products;
+          tmpProducts = [...tmpProducts, ...data.data];
         } else {
-          setDataSource({
-            ...dataSource,
-            total: data.total,
-            products: [...dataSource.products, ...data.data],
-            error: null,
-          });
+          tmpProducts = data.data;
         }
-        console.log(`Data Source on Page ${dataSource.page}`, dataSource);
+
+        setDataSource({
+          ...dataSource,
+          total: data.total,
+          products: tmpProducts,
+          error: null,
+        });
       }
     } catch (error) {
       setDataSource({
@@ -110,24 +108,10 @@ export default function ProductScreen(props) {
     setDataSource({...dataSource, page: dataSource.page + 1});
   };
 
-  //Item Layout
-  const _getItemLayout = (data, index) => {
-    const productHeight = PRODUCT_ITEM_HEIGHT + PRODUCT_ITEM_MARGIN;
-    return {
-      length: productHeight,
-      offset: productHeight * index,
-      index,
-    };
-  };
-
   //Render Item
   const _renderItem = ({item}) => {
     return (
-      <View
-        style={[
-          styles.itemCover,
-          {height: complaintId == null ? 240 : 260, marginBottom: 10},
-        ]}>
+      <View style={[styles.itemCover, {marginBottom: 10}]}>
         {item.file_images.length > 0 ? (
           <Image
             source={{uri: item.file_images[0].filepath}}
@@ -135,9 +119,11 @@ export default function ProductScreen(props) {
             style={styles.itemImage}
           />
         ) : (
-          <View style={styles.imgItem}>
-            <Text>No image</Text>
-          </View>
+          <Image
+            resizeMode={'cover'}
+            style={styles.itemImage}
+            source={NoImage}
+          />
         )}
 
         <View style={styles.itemCoverTitle}>
@@ -177,47 +163,47 @@ export default function ProductScreen(props) {
 
   //Render Footer
   const _renderFooter = () => {
+    if (dataSource.total <= 0) {
+      return null;
+    }
+
     if (dataSource.loading) {
       <View style={styles.footerCoverLoader}>
         <ActivityIndicator animating={true} color="#106bb5" />
       </View>;
-    } else {
-      if (dataSource.total <= 0) {
-        return null;
-      }
-
-      if (dataSource.total > dataSource.products.length) {
-        return (
-          <View
-            style={{
-              padding: 5,
-            }}>
-            <TouchableOpacity
-              activeOpacity={0.9}
-              onPress={loadMoreProduct}
-              style={{
-                padding: 10,
-                backgroundColor: '#27303d',
-                borderRadius: 5,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text
-                style={{
-                  color: 'white',
-                  fontSize: 16,
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                }}>
-                Selanjutnya
-              </Text>
-            </TouchableOpacity>
-          </View>
-        );
-      }
-      return null;
     }
+
+    return (
+      <View
+        style={{
+          padding: 5,
+          marginBottom: 10,
+        }}>
+        {dataSource.total > dataSource.products.length ? (
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={loadMoreProduct}
+            style={{
+              padding: 10,
+              backgroundColor: '#27303d',
+              borderRadius: 5,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 16,
+                fontWeight: 'bold',
+                textAlign: 'center',
+              }}>
+              Selanjutnya
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+      </View>
+    );
   };
 
   // Event Button Filter Press
@@ -253,7 +239,7 @@ export default function ProductScreen(props) {
     <SafeAreaView style={styles.productSafeArea}>
       <View style={styles.productCover}>
         {/* TOP */}
-        <View style={{height: 45, width: width}}>
+        <View style={{height: '7.5%', width: width}}>
           <View
             style={{
               justifyContent: 'center',
@@ -303,30 +289,39 @@ export default function ProductScreen(props) {
         {/* BOTTOM */}
         <View
           style={{
-            width: width,
-            height: height - 45,
+            height: '92.5%',
             backgroundColor: '#bac4db',
-            paddingVertical: 10,
+            marginBottom: 50,
+            width: width,
           }}>
-          {!loading && dataSource.products.length > 0 ? (
-            <FlatList
-              style={{flex: 1, padding: 5}}
-              data={dataSource.products}
-              keyExtractor={(item, index) => `${index}_${item.id}`}
-              renderItem={_renderItem}
-              getItemLayout={_getItemLayout}
-              numColumns={numColumns}
-              showsVerticalScrollIndicator={false}
-              ListFooterComponent={_renderFooter}
-            />
-          ) : (
-            <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={{fontSize: 18, fontWeight: 'bold', color: 'white'}}>
-                DATA BARANG KOSONG
-              </Text>
-            </View>
-          )}
+          <View
+            style={{
+              flex: 1,
+            }}>
+            {!loading && dataSource.products.length > 0 ? (
+              <FlatList
+                style={{flex: 1, padding: 5}}
+                data={dataSource.products}
+                keyExtractor={(item, index) => `${index}_${item.id}`}
+                renderItem={_renderItem}
+                numColumns={numColumns}
+                enableEmptySections={true}
+                ListFooterComponent={_renderFooter}
+              />
+            ) : (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text
+                  style={{fontSize: 18, fontWeight: 'bold', color: 'white'}}>
+                  DATA BARANG KOSONG
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
       </View>
 
@@ -420,10 +415,10 @@ const styles = StyleSheet.create({
     margin: PRODUCT_ITEM_OFFSET,
     width:
       (SCREEN_WIDTH - PRODUCT_ITEM_MARGIN) / numColumns - PRODUCT_ITEM_MARGIN,
-    overflow: 'hidden',
     borderRadius: 3,
     backgroundColor: 'white',
     flexDirection: 'column',
+    overflow: 'hidden',
     ...Platform.select({
       ios: {
         shadowColor: 'rgba(0,0,0, .2)',

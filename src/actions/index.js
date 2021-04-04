@@ -11,6 +11,8 @@ import {
   addCartAction,
   deleteCartAction,
   destroyedOrderAction,
+  setUserCartAction,
+  setErrorCartAction,
 } from './CartAction';
 
 export {
@@ -24,4 +26,6 @@ export {
   addCartAction,
   deleteCartAction,
   destroyedOrderAction,
+  setUserCartAction,
+  setErrorCartAction,
 };

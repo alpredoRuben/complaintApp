@@ -183,10 +183,10 @@ function ComplaintScreen(props) {
           <View style={styles.rowItemLeft}>
             <Text
               style={{
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: 'bold',
-                color: '#a65e08',
-                marginTop: 10,
+                color: '#03718a',
+                marginTop: 0,
               }}>
               Uraian Pengaduan
             </Text>
@@ -213,7 +213,7 @@ function ComplaintScreen(props) {
               <>
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: 'bold',
                     color: '#03718a',
                     marginTop: 10,
@@ -227,7 +227,7 @@ function ComplaintScreen(props) {
             )}
             <Text
               style={{
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: 'bold',
                 color: '#03718a',
                 marginTop: 10,
@@ -240,30 +240,54 @@ function ComplaintScreen(props) {
           </View>
 
           <View style={styles.rowItemRight}>
-            <Text
+            <View
               style={styles.rowItemInfo(
-                item.is_finished ? '#038c05' : '#b9cc0a',
+                item.is_finished ? '#027542' : '#9e9e02',
               )}>
-              {item.is_finished ? 'SELESAI' : 'BELUM SELESAI'}
-            </Text>
+              <Text
+                style={{
+                  fontSize: 9,
+                  fontWeight: 'bold',
+                  color: 'white',
+                  textAlign: 'center',
+                }}>
+                {item.is_finished ? 'SELESAI' : 'BELUM SELESAI'}
+              </Text>
+            </View>
 
             {userInfo.user.roles[0].slug !== 'pegawai' ? (
-              <Text
+              <View
                 style={styles.rowItemInfo(
                   item.assigned != null && item.assigned.is_accepted
                     ? '#0f8009'
                     : '#c97602',
                 )}>
-                {item.assigned != null && item.assigned.is_accepted
-                  ? 'TELAH DIKONFIRMASI'
-                  : 'MENUNGGU KONFIRMASI'}
-              </Text>
+                <Text
+                  style={{
+                    fontSize: 9,
+                    fontWeight: 'bold',
+                    color: 'white',
+                    textAlign: 'center',
+                  }}>
+                  {item.assigned != null && item.assigned.is_accepted
+                    ? 'TELAH DIKONFIRMASI'
+                    : 'MENUNGGU KONFIRMASI'}
+                </Text>
+              </View>
             ) : null}
 
             {item.types && item.types !== null && (
-              <Text style={styles.rowItemInfo('#70035c')}>
-                {`TUJUAN ${item.types.name.toUpperCase()}`}
-              </Text>
+              <View style={styles.rowItemInfo('#70035c')}>
+                <Text
+                  style={{
+                    fontSize: 9,
+                    fontWeight: 'bold',
+                    color: 'white',
+                    textAlign: 'center',
+                  }}>
+                  {`TUJUAN ${item.types.name.toUpperCase()}`}
+                </Text>
+              </View>
             )}
           </View>
         </View>
@@ -287,14 +311,14 @@ function ComplaintScreen(props) {
 
     return (
       <View style={styles.footerLoadCover}>
-        {dataSource.total >= dataSource.complaints.length ? null : (
+        {dataSource.total > dataSource.complaints.length ? (
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={loadMore(dataSource.page + 1)}
             style={styles.buttonLoad}>
             <Text style={styles.buttonLoadText}>Selanjutnya</Text>
           </TouchableOpacity>
-        )}
+        ) : null}
       </View>
     );
   };
@@ -334,7 +358,7 @@ function ComplaintScreen(props) {
             flex: 2,
             padding: 5,
             borderBottomRightRadius: 50,
-            backgroundColor: '#f7f7f7',
+            backgroundColor: '#cee0eb',
             shadowColor: '#e8eaed',
             elevation: 12,
           }}>
@@ -485,7 +509,7 @@ function ComplaintScreen(props) {
         <View
           style={{
             height: '10%',
-            backgroundColor: '#f2f7fa',
+            backgroundColor: '#cee0eb',
           }}>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View
@@ -628,9 +652,9 @@ const styles = StyleSheet.create({
   rowItemContainer: {
     flex: 1,
     margin: 5,
-    backgroundColor: '#d5e0eb',
+    backgroundColor: '#f7f7f7',
     flexDirection: 'row',
-    borderColor: '#bfd0e0',
+    borderColor: '#72acc4',
     borderRadius: 5,
     borderWidth: 1,
   },
@@ -639,18 +663,16 @@ const styles = StyleSheet.create({
   rowItemMessage: {fontSize: 12, fontStyle: 'italic', textAlign: 'justify'},
   rowItemRight: {
     paddingHorizontal: 5,
-    paddingVertical: 10,
-    alignItems: 'baseline',
+    paddingVertical: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
     width: '25%',
   },
   rowItemInfo: (bgColor) => ({
-    fontSize: 9,
     marginBottom: 5,
     paddingHorizontal: 5,
     paddingVertical: 2,
-    fontWeight: 'bold',
     backgroundColor: bgColor,
-    color: Colors.White,
   }),
   rowItemTime: {fontSize: 10, fontWeight: 'bold', marginTop: 10},
 
