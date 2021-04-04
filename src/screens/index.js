@@ -26,6 +26,8 @@ import DetailCartScreen from './inventory/DetailCartScreen';
 
 import CartScreen from './carts/CartScreen';
 
+import EditCartScreen from './carts/EditCartScreen';
+
 export {
   LoginScreen,
   SplashScreen,
@@ -59,4 +61,6 @@ export {
   DetailCartScreen,
   //Carts
   CartScreen,
+  //Edit Cart
+  EditCartScreen,
 };

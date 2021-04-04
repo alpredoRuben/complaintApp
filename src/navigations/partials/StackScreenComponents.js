@@ -20,6 +20,7 @@ import {
   ProductScreen,
   DetailCartScreen,
   CartScreen,
+  EditCartScreen,
 } from '../../screens';
 
 const navigatorScreenOption = () => ({
@@ -183,6 +184,11 @@ export function CartStackScreen(props) {
         name="CartScreen"
         component={CartScreen}
         options={Headers(props, 'KERANJANG PEMESANAN')}
+      />
+      <CartStack.Screen
+        name="EditCartScreen"
+        component={EditCartScreen}
+        options={Headers(props, 'EDIT PESANAN')}
       />
     </CartStack.Navigator>
   );

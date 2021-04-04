@@ -20,6 +20,9 @@ const Carts = (props) => {
 
   const onCartPressHandle = () => {
     console.log('Props Cart', props);
+    props.navigation.navigate('CartStackScreen', {
+      screen: 'CartScreen',
+    });
   };
 
   React.useEffect(() => {

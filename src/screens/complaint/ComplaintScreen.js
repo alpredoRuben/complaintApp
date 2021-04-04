@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import {Button, RadioButton, FAB} from 'react-native-paper';
 import {ScrollView} from 'react-native-gesture-handler';
-import DatePicker from 'react-native-datepicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 
 import Colors from '../../utils/Colors';
@@ -54,7 +54,9 @@ const elements = (slug) => {
 function ComplaintScreen(props) {
   const {userInfo} = useSelector((state) => state.AuthReducer);
   const [filters, setFilters] = useState({
-    dates: moment().format('YYYY-MM-DD'),
+    dates: new Date(), //moment().format('YYYY-MM-DD'),
+    strDate: moment().format('D MMM Y'),
+    show: false,
     category:
       userInfo.user.roles[0].slug === 'admin' ||
       userInfo.user.roles[0].slug === 'customer'
@@ -72,9 +74,10 @@ function ComplaintScreen(props) {
   });
 
   const fetchComplaints = async () => {
+    const strDate = moment(filters.dates).format('YYYY-MM-DD');
     try {
       const results = await Api.get(
-        `/complaints?page=${dataSource.page}&dates=${filters.dates}&sentences=${filters.category}`,
+        `/complaints?page=${dataSource.page}&dates=${strDate}&sentences=${filters.category}`,
         Authorization(userInfo.token),
       );
 
@@ -137,6 +140,20 @@ function ComplaintScreen(props) {
       unsubscribe;
     };
   }, [dataSource.page, filters.refresh]);
+
+  const showingDate = () => {
+    setFilters({...filters, show: true});
+  };
+
+  const onChangeFilterDate = (event, date) => {
+    const currentDate = date || filters.dates;
+    setFilters({
+      ...filters,
+      show: false,
+      dates: currentDate,
+      strDate: moment(currentDate).format('D MMM Y'),
+    });
+  };
 
   const loadMore = (p) => {
     setDataSource({
@@ -330,8 +347,6 @@ function ComplaintScreen(props) {
       loading: true,
     });
 
-    console.log('Filters', filters);
-
     fetchComplaints();
   };
 
@@ -374,30 +389,28 @@ function ComplaintScreen(props) {
                   <Text style={{fontSize: 11, paddingVertical: 5}}>
                     Tanggal Pengaduan
                   </Text>
-                  <DatePicker
-                    style={{width: '100%'}}
-                    date={filters.dates}
-                    mode="date"
-                    placeholder="select date"
-                    format="YYYY-MM-DD"
-                    minDate="1945-08-17"
-                    confirmBtnText="Confirm"
-                    cancelBtnText="Cancel"
-                    customStyles={{
-                      dateIcon: {
-                        position: 'absolute',
-                        left: 0,
-                        top: 4,
-                        marginLeft: 0,
-                      },
-                      dateInput: {
-                        borderColor: '#85a6a6',
-                      },
-                    }}
-                    onDateChange={(date) => {
-                      setFilters({...filters, dates: date});
-                    }}
-                  />
+
+                  <Button
+                    icon="calendar"
+                    mode="contained"
+                    color="#098fed"
+                    labelStyle={{color: '#fff'}}
+                    onPress={showingDate}>
+                    {filters.strDate}
+                  </Button>
+
+                  {filters.show && (
+                    <DateTimePicker
+                      style={{width: '100%'}}
+                      mode="date"
+                      value={filters.dates}
+                      display="spinner"
+                      is24Hour={true}
+                      minimumDate={new Date(1945, 0, 1)}
+                      maximumDate={new Date(2300, 10, 20)}
+                      onChange={onChangeFilterDate}
+                    />
+                  )}
                 </View>
 
                 <View style={{marginVertical: 5}}>

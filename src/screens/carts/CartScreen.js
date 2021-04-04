@@ -100,18 +100,22 @@ export default function CartScreen(props) {
     );
   };
 
-  const onCartItemPressHandler = (id) => {
-    console.log('Item Press Id', id);
-  };
-
   const renderItem = ({item}) => {
     return (
-      <TouchableOpacity onPress={() => onCartItemPressHandler(item.id)}>
+      <TouchableOpacity
+        onPress={() => {
+          props.navigation.navigate('CartStackScreen', {
+            screen: 'EditCartScreen',
+            params: {
+              cartId: item.id,
+            },
+          });
+        }}>
         <View
           style={{
             flex: 1,
             marginTop: 5,
-            backgroundColor: '#edfbfc',
+            backgroundColor: '#d5f3f5',
           }}>
           <View style={{flexDirection: 'row'}}>
             <View style={{width: '75%', padding: 10}}>
@@ -139,14 +143,14 @@ export default function CartScreen(props) {
                   alignItems: 'center',
                 }}>
                 <Text
-                  style={{color: '#222', fontSize: 10, textAlign: 'center'}}>
-                  Total Pesanan
+                  style={{color: '#073361', fontSize: 9, textAlign: 'center'}}>
+                  TOTAL PESANAN
                 </Text>
                 <Text
-                  style={{color: '#a37105', fontSize: 20, fontWeight: 'bold'}}>
+                  style={{color: '#a37105', fontSize: 16, fontWeight: 'bold'}}>
                   {item.quantity}
                 </Text>
-                <Text style={{color: '#222', fontSize: 11}}>
+                <Text style={{color: '#555', fontSize: 10}}>
                   {item.product.satuan}
                 </Text>
               </View>
@@ -198,8 +202,9 @@ export default function CartScreen(props) {
                 ListHeaderComponent={FlatListHeader('Daftar Pemesanan')}
                 ItemSeparatorComponent={separatorFlat}
                 renderItem={renderItem}
-                keyExtractor={(item, index) => `${item.id}_${index.toString()}`}
+                keyExtractor={(item) => `${item.id.toString()}`}
                 enableEmptySections={true}
+                showsVerticalScrollIndicator={false}
               />
             ) : (
               <View

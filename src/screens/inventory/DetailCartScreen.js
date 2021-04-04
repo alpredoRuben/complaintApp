@@ -268,16 +268,6 @@ export default function DetailCartScreen(props) {
 
           <View style={{marginTop: 10}}>
             <Button
-              icon="cart"
-              mode="contained"
-              contentStyle={{backgroundColor: '#027060'}}
-              onPress={() => console.log('Pressed')}>
-              Keranjang Pemesanan
-            </Button>
-          </View>
-
-          <View style={{marginTop: 10}}>
-            <Button
               icon={({size, color}) => (
                 <Icon
                   name="chevron-back-circle-outline"
